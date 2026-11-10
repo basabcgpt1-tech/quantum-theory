@@ -8,6 +8,8 @@ WINDOWS = {0.25: (0.37, 0.42), 0.5: (0.335, 0.385), 1.0: (0.31, 0.36)}
 out = "data/crit.json"
 res = json.load(open(out)) if os.path.exists(out) else {}
 Ns = [int(a) for a in sys.argv[1].split(",")]
+if len(sys.argv) > 2:      # optional: restrict to some lattice spacings
+    WINDOWS = {x: WINDOWS[x] for x in map(float, sys.argv[2].split(","))}
 t0 = time.time()
 for N in Ns:
     for x, (lo, hi) in WINDOWS.items():

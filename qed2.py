@@ -21,17 +21,22 @@ _dp = np.ctypeslib.ndpointer(np.float64, flags="C")
 _lib.matvec.argtypes = [ctypes.c_long, ctypes.c_int, np.ctypeslib.ndpointer(np.int32, flags="C"),
                         _dp, ctypes.c_double, _dp, _dp]
 _lib.matvec.restype = None
+MEM = float(os.environ.get("QED2_MEM", 6e9))   # bytes allowed for the Lanczos basis
 
 
-@functools.lru_cache(maxsize=2)
-def tables(N):
-    """Zero-charge basis, hop table, and the pieces of the diagonal."""
+def basis_states(N, dq=0):
+    """Sorted bit patterns with N/2 + dq up spins (bit i = site i+1)."""
     allst = np.arange(1 << N, dtype=np.int64)
     pc = np.zeros(1 << N, dtype=np.int8)
     for i in range(N):
         pc += ((allst >> i) & 1).astype(np.int8)
-    st = allst[pc == N // 2]
-    del allst, pc
+    return allst[pc == N // 2 + dq]
+
+
+@functools.lru_cache(maxsize=2)
+def tables(N, dq=0):
+    """Basis of total charge Q = dq (N/2 + dq up spins), hop table, diagonal pieces."""
+    st = basis_states(N, dq)
     n = len(st)
     tab = np.full((n, N - 1), -1, dtype=np.int32)
     for i in range(N - 1):
@@ -52,13 +57,13 @@ def tables(N):
     return n, np.ascontiguousarray(tab), A, B, Mt, cs
 
 
-def spectrum(N, x, m, eps0=0.0, k=2, shift=True, tol=1e-11, vec=False):
+def spectrum(N, x, m, eps0=0.0, k=2, shift=True, tol=1e-11, vec=False, dq=0):
     """k lowest eigenvalues of W (Lanczos, full reorthogonalisation).
     m is the physical m/g; returns energies in units of g (and the ground vector)."""
-    n, tab, A, B, Mt, _ = tables(N)
+    n, tab, A, B, Mt, _ = tables(N, dq)
     ml = m - 1.0 / (8 * np.sqrt(x)) if shift else m
     diag = A + 2 * eps0 * B + (N - 1) * eps0 ** 2 + 2.0 * ml * np.sqrt(x) * Mt
-    maxsteps = int(min(500, n, 6e9 / (8 * n)))
+    maxsteps = int(min(600, n, MEM / (8 * n)))
     Q = np.empty((maxsteps, n))
     q = np.random.default_rng(1).standard_normal(n); q /= np.linalg.norm(q)
     w = np.empty(n); al, be = [], []; prev = None

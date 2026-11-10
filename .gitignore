@@ -1,3 +1,6 @@
 __pycache__/
 kernel.so
 *.log
+paper/node_modules/
+paper/package*.json
+paper/paper.html
