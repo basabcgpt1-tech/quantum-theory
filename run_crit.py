@@ -4,7 +4,7 @@ import json, os, sys, time
 import numpy as np
 import qed2
 
-WINDOWS = {0.5: (0.335, 0.385), 0.25: (0.37, 0.42), 1.0: (0.31, 0.36)}
+WINDOWS = {0.25: (0.37, 0.42), 0.5: (0.335, 0.385), 1.0: (0.31, 0.36)}
 out = "data/crit.json"
 res = json.load(open(out)) if os.path.exists(out) else {}
 Ns = [int(a) for a in sys.argv[1].split(",")]

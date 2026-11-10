@@ -92,8 +92,8 @@ gets:
 
 Lattice Hamiltonian with staggered fermions on N sites and open boundaries;
 Gauss's law is solved exactly so only N spins remain. Zero-charge sector,
-Lanczos with full reorthogonalisation, up to N = 22 (705 432 states; N = 24 in
-progress). x = 1/(ga)², physical length Lg = N/√x. The lattice mass is
+Lanczos with full reorthogonalisation, up to N = 22 (705 432 states; N = 24 exceeds
+the memory available for the Lanczos basis). x = 1/(ga)², physical length Lg = N/√x. The lattice mass is
 m − g²a/8 (Dempsey et al. 2022), which removes O(a) errors. The solver is checked
 against an independently built dense Hamiltonian (`test_qed2.py`).
 
@@ -102,7 +102,7 @@ against an independently built dense Hamiltonian (`test_qed2.py`).
 | | Prediction | Lattice |
 |---|---|---|
 | P1 | 0.56419 | 0.5636 (extrapolated in a²) / 0.5641 (in a), from x = 9, 12, 16 |
-| P2 | 1.781 | 1.75 – 1.80 (first pass, x = 1…6, m/g ≤ 0.1) |
+| P2 | 1.781 | 1.753 (x = 2), 1.798 (x = 4); 1.874 at x = 9, where Lg ≤ 6.7 is too small |
 | P3 | 0 | |σ|/g² ≤ 1×10⁻⁴ at x = 2, 3 (α = ¼); < 10⁻⁵ at α = ½ |
 | P4, α = ¼, linear coefficient | 0.1599 | 0.1588 (x = 3), 0.1661 (x = 2) |
 | P4, α = ¼, quadratic coefficient | −0.358 | −0.328 (x = 3), −0.394 (x = 2) |
@@ -137,7 +137,7 @@ Full tower at ga = 1.41, m/g = 0.356 (`run_tower.py`):
 ## 4. Verdict
 
 **Confirmed**
-- P1 to 0.1%, P3 to 10⁻⁴, P4 to 1–2% at first order and ~10% on the
+- P1 to 0.1%, P2 to 1–2% where the volume is adequate, P3 to 10⁻⁴, P4 to 1–2% at first order and ~10% on the
   second-order coefficient. The 15–22% deficit in the fractional-charge string
   tension reported in the first pass of this work was the missing second-order
   term, not a lattice problem.
@@ -169,7 +169,8 @@ Full tower at ga = 1.41, m/g = 0.356 (`run_tower.py`):
   m_c/g ≈ 0.3335 (Byrnes et al. 2002, quoted from memory) but 22 sites cannot
   reach the continuum at the volume this transition needs (Lg ≳ 15); that
   requires tensor-network sizes.
-- P2 was not redone with the improved volume fit.
+- P2 at fine lattice spacing: the x = 9 value is 5% high and the volume there
+  is too small to tell lattice error from finite-size error.
 
 ## 5. What is known and what is this work
 
@@ -191,6 +192,7 @@ generation and confinement, not a route to the 4D proof.
     gcc -O3 -march=native -fopenmp -shared -fPIC kernel.c -o kernel.so
     python3 test_qed2.py          # solver vs dense Hamiltonian
     python3 run_gap.py            # P1            (~6 min)
+    python3 run_slope.py          # P2            (~3 min)
     python3 run_string.py         # P3, P4        (~10 min), then analyze_string.py
     python3 run_crit.py 8,10,12,14,16,18,20,22   # P5–P8 (~40 min), then analyze_crit.py
     python3 run_tower.py          # P6 tower      (~5 min)
