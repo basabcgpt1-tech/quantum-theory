@@ -22,7 +22,7 @@ L = −¼ F² + ψ̄(i∂̸ − gA̸ − m)ψ, with g of mass dimension 1.
    (□ + g²/π) E = 0. The only gauge-invariant excitation of the massless theory
    is a free boson of mass **M = g/√π**. The "photon" eats the fermion pair.
 2. **Bosonized form.** With ψ̄γ^μψ = ε^{μν}∂_νφ/√π the full theory is
-   L = ½(∂φ)² − (g²/2π)(φ + θ/2·√(1/π)·π)² + c·m·g·cos(2√π φ), c = e^γ/(2π^{3/2}).
+   L = ½(∂φ)² − (g²/2π)(φ + θ/(2√π))² + c·m·g·cos(2√π φ), c = e^γ/(2π^{3/2}).
    A background field θ = 2πα is what a pair of external charges ±αg creates.
 3. **Predictions.**
    - P1: massless gap M/g = 1/√π = 0.5642.
