@@ -1,9 +1,9 @@
 # quantum-theory
 
 Mass gap, confinement and the θ = π critical point of 1+1D QED (Schwinger model):
-derivations, twelve quantitative predictions, and tests by exact diagonalisation and DMRG.
+derivations, thirteen quantitative predictions, and tests by exact diagonalisation and DMRG.
 
-- **Paper:** [paper/paper.pdf](paper/paper.pdf) (25 pages; source `paper/paper.md`)
+- **Paper:** [paper/paper.pdf](paper/paper.pdf) (26 pages; source `paper/paper.md`)
 - **One-page summary:** [THEORY.md](THEORY.md)
 - **Solvers:** `qed2.py` + `kernel.c` (exact diagonalisation), `dmrg.py` (DMRG)
 - **Calculations:** `run_*.py`; **analysis:** `analyze_*.py`, `check_*.py`; **figures:** `make_figures.py`
