@@ -4,25 +4,25 @@ import re, subprocess, pathlib
 
 here = pathlib.Path(__file__).parent
 REFS = {
- "schwinger": "J. Schwinger, <i>Gauge invariance and mass. II</i>, Phys. Rev. <b>128</b>, 2425 (1962).",
- "lowenstein": "J. H. Lowenstein and J. A. Swieca, <i>Quantum electrodynamics in two dimensions</i>, Ann. Phys. <b>68</b>, 172 (1971).",
+ "schwinger": "J. Schwinger, <i>Gauge invariance and mass. II</i>, Phys. Rev. <b>128</b>, 2425–2429 (1962).",
+ "lowenstein": "J. H. Lowenstein and J. A. Swieca, <i>Quantum electrodynamics in two dimensions</i>, Ann. Phys. <b>68</b>, 172–195 (1971).",
  "cjs": "S. Coleman, R. Jackiw and L. Susskind, <i>Charge shielding and quark confinement in the massive Schwinger model</i>, Ann. Phys. <b>93</b>, 267 (1975).",
- "coleman76": "S. Coleman, <i>More about the massive Schwinger model</i>, Ann. Phys. <b>101</b>, 239 (1976).",
- "hamer82": "C. J. Hamer, J. Kogut, D. P. Crewther and M. M. Mazzolini, <i>The massive Schwinger model on a lattice: background field, chiral symmetry and the string tension</i>, Nucl. Phys. B <b>208</b>, 413 (1982).",
+ "coleman76": "S. Coleman, <i>More about the massive Schwinger model</i>, Ann. Phys. <b>101</b>, 239–267 (1976).",
+ "hamer82": "C. J. Hamer, J. Kogut, D. P. Crewther and M. M. Mazzolini, <i>The massive Schwinger model on a lattice: background field, chiral symmetry and the string tension</i>, Nucl. Phys. B <b>208</b>, 413–438 (1982).",
  "byrnes": "T. M. R. Byrnes, P. Sriganesh, R. J. Bursill and C. J. Hamer, <i>Density matrix renormalisation group approach to the massive Schwinger model</i>, Phys. Rev. D <b>66</b>, 013002 (2002); arXiv:hep-lat/0202014.",
- "adam": "C. Adam, <i>Massive Schwinger model within mass perturbation theory</i>, Ann. Phys. <b>259</b>, 1 (1997); arXiv:hep-th/9704064.",
- "act": "E. Arguello Cruz, G. Tarnopolsky and Y. Xin, <i>Precision study of the massive Schwinger model near quantum criticality</i>, arXiv:2412.01902 (2024).",
- "coleman75": "S. Coleman, <i>Quantum sine-Gordon equation as the massive Thirring model</i>, Phys. Rev. D <b>11</b>, 2088 (1975).",
- "mandelstam": "S. Mandelstam, <i>Soliton operators for the quantized sine-Gordon equation</i>, Phys. Rev. D <b>11</b>, 3026 (1975).",
- "stevenson": "P. M. Stevenson, <i>Gaussian effective potential: quantum mechanics; λφ⁴ theory</i>, Phys. Rev. D <b>30</b>, 1712 (1984); <b>32</b>, 1389 (1985).",
- "cardy86": "J. L. Cardy, <i>Effect of boundary conditions on the operator content of two-dimensional conformally invariant theories</i>, Nucl. Phys. B <b>275</b>, 200 (1986).",
- "cardy89": "J. L. Cardy, <i>Boundary conditions, fusion rules and the Verlinde formula</i>, Nucl. Phys. B <b>324</b>, 581 (1989).",
+ "adam": "C. Adam, <i>Massive Schwinger model within mass perturbation theory</i>, Ann. Phys. <b>259</b>, 1–63 (1997); arXiv:hep-th/9704064.",
+ "act": "E. Arguello Cruz, G. Tarnopolsky and Y. Xin, <i>Precision study of the massive Schwinger model near quantum criticality</i>, arXiv:2412.01902 (2024); Phys. Rev. D, doi:10.1103/vf7m-kzk2.",
+ "coleman75": "S. Coleman, <i>Quantum sine-Gordon equation as the massive Thirring model</i>, Phys. Rev. D <b>11</b>, 2088–2097 (1975).",
+ "mandelstam": "S. Mandelstam, <i>Soliton operators for the quantized sine-Gordon equation</i>, Phys. Rev. D <b>11</b>, 3026–3030 (1975).",
+ "stevenson": "P. M. Stevenson, <i>Gaussian effective potential: Quantum mechanics</i>, Phys. Rev. D <b>30</b>, 1712 (1984); <i>Gaussian effective potential. II. λφ⁴ field theory</i>, Phys. Rev. D <b>32</b>, 1389 (1985).",
+ "cardy86": "J. L. Cardy, <i>Effect of boundary conditions on the operator content of two-dimensional conformally invariant theories</i>, Nucl. Phys. B <b>275</b>, 200–218 (1986).",
+ "cardy89": "J. L. Cardy, <i>Boundary conditions, fusion rules and the Verlinde formula</i>, Nucl. Phys. B <b>324</b>, 581–596 (1989).",
  "bcn": "H. W. J. Blöte, J. L. Cardy and M. P. Nightingale, <i>Conformal invariance, the central charge, and universal finite-size amplitudes at criticality</i>, Phys. Rev. Lett. <b>56</b>, 742 (1986).",
  "affleck": "I. Affleck, <i>Universal term in the free energy at a critical point and the conformal anomaly</i>, Phys. Rev. Lett. <b>56</b>, 746 (1986).",
- "cc": "P. Calabrese and J. Cardy, <i>Entanglement entropy and quantum field theory</i>, J. Stat. Mech. P06002 (2004).",
+ "cc": "P. Calabrese and J. Cardy, <i>Entanglement entropy and quantum field theory</i>, J. Stat. Mech. (2004) P06002; arXiv:hep-th/0405152.",
  "ks": "J. Kogut and L. Susskind, <i>Hamiltonian formulation of Wilson's lattice gauge theories</i>, Phys. Rev. D <b>11</b>, 395 (1975).",
- "bsk": "T. Banks, L. Susskind and J. Kogut, <i>Strong-coupling calculations of lattice gauge theories: (1+1)-dimensional exercises</i>, Phys. Rev. D <b>13</b>, 1043 (1976).",
- "dkpz": "R. Dempsey, I. R. Klebanov, S. S. Pufu and B. Zan, <i>Discrete chiral symmetry and mass shift in the lattice Hamiltonian approach to the Schwinger model</i>, Phys. Rev. Research <b>4</b>, 043133 (2022).",
+ "bsk": "T. Banks, L. Susskind and J. Kogut, <i>Strong-coupling calculations of lattice gauge theories: (1+1)-dimensional exercises</i>, Phys. Rev. D <b>13</b>, 1043–1053 (1976).",
+ "dkpz": "R. Dempsey, I. R. Klebanov, S. S. Pufu and B. Zan, <i>Discrete chiral symmetry and mass shift in the lattice Hamiltonian approach to the Schwinger model</i>, Phys. Rev. Research <b>4</b>, 043133 (2022); arXiv:2206.05308.",
 }
 src = (here / "paper.md").read_text()
 order = []
@@ -79,10 +79,11 @@ subprocess.run(["pandoc", "_build.md", "-s", f"--katex=file://{katex}/", "--numb
                 "-o", "paper.html"], cwd=here, check=True)
 js = r"""
 const { chromium } = require('playwright');
-(async () => { const b = await chromium.launch(); const p = await b.newPage();
+(async () => { const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 643, height: 900 } });
   await p.goto('file://' + process.argv[2]); await p.waitForTimeout(2500);
   const bad = await p.$$eval('.katex-error', e => e.map(x => x.textContent)); if (bad.length) console.log('KATEX ERRORS', bad);
   const raw = await p.$$eval('span.math', e => e.filter(x => !x.querySelector('.katex')).length); if (raw) console.log('UNRENDERED', raw);
+  const wide = await p.evaluate(() => { const w = document.documentElement.clientWidth; return [...document.querySelectorAll('.katex-display, table, figure')].filter(e => e.scrollWidth > w + 2 || e.getBoundingClientRect().right > w + 2).map(e => e.textContent.slice(0, 60)); }); if (wide.length) console.log('TOO WIDE', wide);
   await p.pdf({ path: process.argv[3], format: 'A4', printBackground: true, displayHeaderFooter: true,
     headerTemplate: '<span></span>',
     footerTemplate: '<div style="font-size:8px;width:100%;text-align:center;color:#555"><span class="pageNumber"></span></div>',

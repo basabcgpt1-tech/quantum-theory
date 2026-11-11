@@ -96,22 +96,20 @@ save(fig, "fig4_crossing")
 
 # ---------------------------------------------------------------- Fig 5: conformal towers
 tw = J("tower"); sec = J("sectors")
+dt = {(Q, N): json.load(open(f"data/dmrg_tower/{Q}_{N}.json"))["ratios"] for Q in (0, -1) for N in (24, 32, 48, 64)}
 fig, ax = plt.subplots(1, 2, figsize=(7.2, 3.2), sharex=True)
-Ns = sorted(map(int, tw)); r = np.array([tw[str(N)] for N in Ns])
-for j in range(1, 5):
-    ax[0].plot(1 / np.array(Ns) ** 2, r[:, j], "-o", color=C[0], ms=4)
-for h in (1.5, 2, 2.5):
-    ax[0].axhline(h, color=MUTED, lw=1, ls="--")
-ax[0].set_ylim(1.3, 2.6); ax[0].set_xlim(0, None)
-ax[0].set_xlabel("$1/N^2$"); ax[0].set_ylabel(r"$(E_n-E_0)/(E_1-E_0)$")
+for k, (Q, edN, edr, hs, yl) in enumerate((
+        (0, sorted(map(int, tw)), lambda N: tw[str(N)], (1.5, 2, 2.5), (1.3, 2.6)),
+        (-1, sorted(int(q.split("|")[1]) for q in sec if q.startswith("-1|")), lambda N: sec[f"-1|{N}"]["ratios"], (2, 3, 4), (1.7, 4.2)))):
+    r = np.array([edr(N) for N in edN]); d = np.array([dt[(Q, N)] for N in (24, 32, 48, 64)])
+    for j in range(1, 5):
+        ax[k].plot(1 / np.array(edN) ** 2, r[:, j], "-o", color=C[0], ms=4, label="exact diag." if j == 1 else None)
+        ax[k].plot(1 / np.array([24, 32, 48, 64]) ** 2, d[:, j], "-s", color=C[1], ms=4, label="DMRG" if j == 1 else None)
+    for h in hs:
+        ax[k].axhline(h, color=MUTED, lw=1, ls="--")
+    ax[k].set_ylim(*yl); ax[k].set_xlabel("$1/N^2$"); ax[k].set_xlim(0, None)
+ax[0].set_ylabel(r"$(E_n-E_0)/(E_1-E_0)$"); ax[0].legend(fontsize=8, loc="center right", bbox_to_anchor=(0.99, 0.32))
 ax[0].set_title(r"(a) $Q=0$: identity tower $\frac{3}{2},2,2,\frac{5}{2}$", loc="left", fontsize=9)
-Ns = sorted(int(k.split("|")[1]) for k in sec if k.startswith("-1|"))
-r = np.array([sec[f"-1|{N}"]["ratios"] for N in Ns])
-for j in range(1, 5):
-    ax[1].plot(1 / np.array(Ns) ** 2, r[:, j], "-s", color=C[1], ms=4)
-for h in (2, 3, 4):
-    ax[1].axhline(h, color=MUTED, lw=1, ls="--")
-ax[1].set_ylim(1.7, 4.2); ax[1].set_xlabel("$1/N^2$")
 ax[1].set_title(r"(b) $Q=-1$: $\varepsilon$ tower $2,3,4,4$", loc="left", fontsize=9)
 save(fig, "fig5_towers")
 
@@ -151,4 +149,47 @@ ax[1].plot(xx, Sx[N // 2 - 1 - (N // 2) % 2] + (xx - chord.max()) / 12, color=MU
 ax[1].set_xlabel(r"$\ln[(2N/\pi)\sin(\pi\ell/N)]$"); ax[1].set_ylabel(r"$S(\ell)$"); ax[1].legend(fontsize=8)
 ax[1].set_title(f"(b) entanglement entropy, $N={N}$", loc="left", fontsize=9)
 save(fig, "fig7_order_ent")
+# ---------------------------------------------------------------- Fig 8-10: DMRG
+ds = J("dmrg_summary")
+fig, ax = plt.subplots(1, 2, figsize=(7.2, 3.0))
+ed = np.array(summ["0.5"]["rows"]); cr = np.array(ds["cross"], float)
+ax[0].plot(1 / ed[:, 0], ed[:, 2], "o", color=C[0], label="exact diagonalisation")
+ax[0].plot(1 / cr[:, 1], cr[:, 3], "s", color=C[1], label="DMRG")
+ax[0].axhline(1.5, color=MUTED, lw=1, ls="--"); ax[0].set_xlim(0, None)
+ax[0].set_xlabel("$1/N$"); ax[0].set_ylabel("$R$ at the crossing"); ax[0].legend(fontsize=8)
+ax[0].set_title("(a) level ratio at the crossing, $ga=1.41$", loc="left", fontsize=9)
+m32 = np.array(ds["m32"], float)
+ax[1].plot(1 / cr[:, 1], cr[:, 2], "s", color=C[0], label="crossing of $R(N_1)$, $R(N_2)$")
+ax[1].plot(1 / m32[:, 0], m32[:, 1], "o", color=C[1], label="$R(N)=3/2$")
+ax[1].set_xlim(0, None); ax[1].set_xlabel("$1/N$"); ax[1].set_ylabel("pseudo-critical $m/g$"); ax[1].legend(fontsize=8)
+ax[1].set_title("(b) two estimates of the critical mass", loc="left", fontsize=9)
+save(fig, "fig8_dmrg_ratio")
+
+fig, ax = plt.subplots(1, 2, figsize=(7.2, 3.0))
+cc = np.array(ds["c_casimir"], float)
+ax[0].plot(1 / cc[:, 0], cc[:, 1], "s", color=C[0], label="at the crossing mass")
+ax[0].plot(1 / cc[:, 0], cc[:, 2], "o", color=C[1], label="at $m(R=3/2)$")
+ax[0].axhline(0.5, color=MUTED, lw=1, ls="--"); ax[0].set_xlim(0, None); ax[0].set_ylim(0.44, 0.56)
+ax[0].set_xlabel("$1/N$"); ax[0].set_ylabel("central charge $c$"); ax[0].legend(fontsize=8)
+ax[0].set_title("(a) Casimir energy", loc="left", fontsize=9)
+ent = ds["c_ent"]; av = ds["c_ent_avg"]
+ev_ = np.array(ent[1]["rows"]); od = np.array(ent[3]["rows"]); a2 = np.array(av[1]["rows"])
+ax[1].plot(1 / ev_[:, 0], ev_[:, 1], "o", color=C[0], label="even cut")
+ax[1].plot(1 / od[:, 0], od[:, 1], "s", color=C[1], label="odd cut")
+ax[1].plot(1 / a2[:, 0], a2[:, 2], "^", color=C[2], label="parity average")
+ax[1].axhline(0.5, color=MUTED, lw=1, ls="--"); ax[1].set_xlim(0, None); ax[1].set_ylim(0.3, 0.78)
+ax[1].set_xlabel("$1/N$"); ax[1].set_ylabel("central charge $c$"); ax[1].legend(fontsize=8, ncol=3, loc="upper center")
+ax[1].set_title("(b) half-chain entanglement entropy", loc="left", fontsize=9)
+save(fig, "fig9_dmrg_c")
+
+if len(ds.get("cont", [])) >= 3:
+    ct = ds["cont"]; u = np.array([1 / c["x"] for c in ct])
+    lo = np.array([min(c["p2"], c["p3"]) for c in ct]); hi = np.array([max(c["p2"], c["p3"]) for c in ct])
+    last = np.array([c["m32"][-1] for c in ct])
+    fig, ax = plt.subplots(1, 1, figsize=(4.8, 3.2))
+    ax.plot(u, last, "o", color=C[1], label="largest size, $R=3/2$")
+    ax.errorbar(u, 0.5 * (lo + hi), yerr=0.5 * (hi - lo), fmt="s", color=C[0], capsize=2.5, label=r"$N\to\infty$")
+    ax.axhline(0.333561, color=MUTED, lw=1, ls="--"); ax.text(0.9, 0.3343, "0.333561(4), Ref. [8]", color=MUTED, fontsize=8)
+    ax.set_xlim(0, None); ax.set_xlabel("$(ga)^2=1/x$"); ax.set_ylabel("$m_c/g$"); ax.legend(fontsize=8, loc="upper left")
+    save(fig, "fig10_continuum")
 print("figures written")

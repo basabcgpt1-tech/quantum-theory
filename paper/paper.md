@@ -1,11 +1,12 @@
 ---
-title: "Mass generation, confinement and the θ = π Ising critical point of two-dimensional QED: derivations and an exact-diagonalisation test"
+title: "Mass generation, confinement and the θ = π Ising critical point of two-dimensional QED: derivations and tests by exact diagonalisation and DMRG"
+author: "basabcgpt1-tech"
 date: "10 November 2026"
 lang: en
 ---
 
 ::: {.abstract}
-**Abstract.** Quantum electrodynamics in 1+1 dimensions (the Schwinger model) is the simplest gauge theory that generates a mass gap from massless constituents, confines fractional charge, and — at vacuum angle $\theta=\pi$ — undergoes a quantum phase transition that has no closed-form solution. We give a self-contained derivation of the chain *anomaly → mass gap → bosonized Hamiltonian → screening versus confinement → $Z_2$ symmetry breaking → boundary conformal field theory*, and turn it into twelve quantitative predictions. Each is tested against an independent first-principles calculation: exact diagonalisation of the gauge-invariant Kogut–Susskind lattice Hamiltonian on open chains of up to 24 sites, with no fitted physics parameters. The massless gap is reproduced to $0.1\%$ ($M/g = 0.5636$–$0.5641$ against $1/\sqrt\pi = 0.5642$); the string tension of fractional charges agrees with mass perturbation theory to $1$–$2\%$ once the second-order term is included; and at the critical point the low-lying spectrum of the neutral sector is the Virasoro tower of the identity, with level ratios $1.497, 1.981, 1.985, 2.445$ against $\tfrac32, 2, 2, \tfrac52$, while the charge $-1$ sector gives $1.965, 2.884, 3.739, 3.846$ against $2, 3, 4, 4$. The Casimir energy gives central charge $c = 0.48$–$0.49$ on the best-converged lattice and the order-parameter exponent is $\beta/\nu = 0.126$ (Ising: $\tfrac12$, $\tfrac18$). We also record what fails: the classical and Gaussian-variational estimates of the critical mass ($0.158$ and $0.265$, the latter with the wrong order of transition), the entanglement-entropy estimate of $c$ at these sizes, and the continuum limit of the critical mass, which is out of reach of exact diagonalisation. The boundary-CFT identification tested here was established by Arguello Cruz, Tarnopolsky and Xin (2024); our contribution is an independent derivation and verification with a different method, and tests of the central charge and second-order string tension. Nothing here bears on the four-dimensional Yang–Mills mass-gap problem beyond providing a controlled laboratory for its mechanisms.
+**Abstract.** Quantum electrodynamics in 1+1 dimensions (the Schwinger model) is the simplest gauge theory that generates a mass gap from massless constituents, confines fractional charge, and — at vacuum angle $\theta=\pi$ — undergoes a quantum phase transition that has no closed-form solution. We give a self-contained derivation of the chain *anomaly → mass gap → bosonized Hamiltonian → screening versus confinement → $Z_2$ symmetry breaking → boundary conformal field theory*, and turn it into twelve quantitative predictions. Each is tested from first principles on the gauge-invariant Kogut–Susskind lattice Hamiltonian with open boundaries, by two independent methods that agree to $10^{-11}$ where they overlap: exact diagonalisation up to 24 sites and density-matrix renormalisation group (DMRG) with an exact matrix-product form of the Coulomb interaction up to 192 sites. No physics parameter is fitted. In the continuum limit the massless gap is $M/g=0.56415$–$0.56421$ (exact: $1/\sqrt\pi=0.56419$) and its slope with fermion mass is $1.775$ ($e^\gamma=1.781$); the string tension of fractional charges agrees with mass perturbation theory through second order to about $1\%$ at four lattice spacings. At the critical point the neutral sector shows the Virasoro tower of the identity (level ratios $1.498,1.993,1.995,2.487$ against $\tfrac32,2,2,\tfrac52$) and the charge $-1$ sector the $\varepsilon$ tower ($1.996,2.986,3.969,3.986$ against $2,3,4,4$); the ratio of the first two gaps at the finite-size crossing converges to $1.500(2)$; the central charge is $c=0.500(7)$ from the Casimir energy and $0.49(1)$ from the entanglement entropy; and $\beta/\nu=0.124(3)$, $1/\nu=1.00(1)$. We show that the even–odd alternation of the entanglement entropy on the staggered lattice is proportional to the order parameter, which explains why single-parity fits give wrong central charges and how to remove the effect. The critical mass extrapolates to $m_c/g=\text{0.3333(2)}$ in the continuum, consistent with the tensor-network value $0.333561(4)$ of Arguello Cruz, Tarnopolsky and Xin, who established the boundary-CFT identification that we rederive and verify here. Classical and Gaussian-variational estimates of $m_c$ fail, the latter qualitatively. Nothing here bears on the four-dimensional Yang–Mills mass-gap problem beyond providing a controlled laboratory for its mechanisms.
 :::
 
 # Introduction
@@ -21,10 +22,10 @@ Progress on such questions has historically come from models in which the mechan
 This paper has three aims.
 
 1. **Derivation.** Sections 2–4 derive, from the Lagrangian, every formula that is later tested, including the finite-size spectrum at the critical point from boundary conformal field theory (BCFT).
-2. **Test.** Sections 5–7 test those formulas against exact diagonalisation of the lattice Hamiltonian. The lattice calculation uses none of the continuum results as input.
+2. **Test.** Sections 5–7 test those formulas against exact diagonalisation and DMRG calculations for the lattice Hamiltonian. The lattice calculations use none of the continuum results as input.
 3. **Honest accounting.** Section 8 separates what is confirmed, what is merely consistent, and what fails.
 
-We state plainly what is and is not new. The physics of Sections 2–3 is classic [@schwinger; @cjs; @coleman76; @adam]. The identification of the open-chain critical spectrum with Ising boundary conditions, and its use to locate $m_c$ to five digits by tensor-network methods, is due to Arguello Cruz, Tarnopolsky and Xin [@act]; we arrived at the same identification independently by the physical argument of Section 4 before consulting that work, and our numerical results agree with theirs where they overlap. What this paper adds is (i) a verification by a different numerical method, with full degeneracy structure of two towers; (ii) an extraction of the central charge from the Casimir energy, which Ref. [@act] takes as input; (iii) a lattice test of the second-order mass correction to the string tension; and (iv) an explicit demonstration that the Gaussian variational method predicts the wrong order for the transition. We make no claim about four-dimensional gauge theory.
+We state plainly what is and is not new. The physics of Sections 2–3 is classic [@schwinger; @cjs; @coleman76; @adam]. The identification of the open-chain critical spectrum with Ising boundary conditions, and its use to locate $m_c$ to five digits by tensor-network methods, is due to Arguello Cruz, Tarnopolsky and Xin [@act]; we arrived at the same identification independently by the physical argument of Section 4 before consulting that work, and our numerical results agree with theirs where they overlap. What this paper adds is (i) a verification with independently written exact-diagonalisation and DMRG codes, including the degeneracy structure of two conformal towers; (ii) a measurement of the central charge, which Ref. [@act] takes as input, by two routes — the Casimir energy, bounded from both sides, and the entanglement entropy; (iii) the observation that the alternating part of the entanglement entropy on the staggered lattice is proportional to the order parameter, and a parity-averaged estimator that removes it; (iv) a lattice test of the second-order mass correction to the string tension; and (v) an explicit demonstration that the Gaussian variational method predicts the wrong order for the transition. We make no claim about four-dimensional gauge theory.
 
 # The continuum theory
 
@@ -138,7 +139,7 @@ with $\beta^2=4\pi$, the energy density of the trial state in units of $M_0^2$ i
 
 $$\frac{\mathcal E(\mu,\phi_0)}{M_0^2}=\frac{\mu^2-1}{8\pi}-\frac{\ln\mu^2}{8\pi}+\frac{\phi_0^2}{2}+k\,\mu\cos2\sqrt\pi\phi_0,\qquad k=\pi c\,\frac mg, \qquad (3.4)$$
 
-where $\mu$ is measured in units of $M_0$. Stationarity in $\mu$ gives $\mu=\tfrac12\left(-a+\sqrt{a^2+4}\right)$ with $a=4\pi k\cos2\sqrt\pi\phi_0$. A continuous transition would require the curvature in $\phi_0$ at the origin to vanish, $1=4\pi k\mu$, simultaneously with the gap equation at $\phi_0=0$, $\mu-1/\mu+4\pi k=0$. Eliminating $k$ gives $1/\mu=0$: **there is no solution**. The Gaussian approximation therefore cannot produce a continuous transition here. Minimising Eq. (3.4) numerically (Fig. 3b) one finds instead that a pair of minima at $\phi_0\approx\pm0.63$ drops below the symmetric minimum at
+where $\mu$ is measured in units of $M_0$. Stationarity in $\mu$ gives $\mu=\tfrac12\left(-a+\sqrt{a^2+4}\right)$ with $a=4\pi k\cos2\sqrt\pi\phi_0$. A continuous transition would require the curvature in $\phi_0$ at the origin to vanish, $1=4\pi k\mu$, simultaneously with the gap equation at $\phi_0=0$, $\mu-1/\mu+4\pi k=0$. Eliminating $k$ gives $1/\mu=0$: **there is no solution**. The Gaussian approximation therefore cannot produce a continuous transition here. Minimising Eq. (3.4) numerically (Fig. 1b) one finds instead that a pair of minima at $\phi_0\approx\pm0.63$ drops below the symmetric minimum at
 
 $$\frac{m_c}{g}\Big|_{\mathrm{Gauss}}\approx0.265\quad\text{(first order)}. \qquad (3.5)$$
 
@@ -158,7 +159,7 @@ For the Ising model ($c=\tfrac12$) there are three conformal boundary conditions
 
 $$Z_{++}=\chi_0,\qquad Z_{+-}=\chi_{1/2},\qquad Z_{ff}=\chi_0+\chi_{1/2},\qquad Z_{+f}=\chi_{1/16}, \qquad (4.2)$$
 
-$$\chi_0=q^{-1/48}\left(1+q^2+q^3+2q^4+2q^5+3q^6+\ldots\right),\qquad \chi_{1/2}=q^{1/2-1/48}\left(1+q+q^2+q^3+2q^4+2q^5+\ldots\right). \qquad (4.3)$$
+$$\begin{aligned}\chi_0&=q^{-1/48}\left(1+q^2+q^3+2q^4+2q^5+3q^6+\ldots\right),\\ \chi_{1/2}&=q^{1/2-1/48}\left(1+q+q^2+q^3+2q^4+2q^5+\ldots\right).\end{aligned} \qquad (4.3)$$
 
 **Which boundary condition does the gauge theory realise?** Consider the Schwinger model on an interval with the background field $g/2$ entering at the left wall, and total charge $Q$ on the interval, so that the field leaving at the right wall is $g(\tfrac12+Q)$. In the ordered phase the two bulk vacua have field $+g/2$ and $-g/2$.
 
@@ -229,7 +230,7 @@ Energies in units of $g$ are $W/2\sqrt x$; the physical length is $Lg=N/\sqrt x$
 
 ## Mass shift
 
-Dempsey, Klebanov, Pufu and Zan [@dkpz] observed that at $m_{\mathrm{lat}}=0$ the lattice Hamiltonian is not at the point corresponding to the massless continuum theory: translation by one site, which is the lattice remnant of the discrete chiral symmetry, is a symmetry only if
+Dempsey, Klebanov, Pufu and Zan [@dkpz] observed that at $m_{\mathrm{lat}}=0$ the lattice Hamiltonian is not at the point corresponding to the massless continuum theory: the lattice remnant of the discrete chiral symmetry — translation by one site accompanied by a shift of $\theta$ by $\pi$ — is a symmetry only if
 
 $$m_{\mathrm{lat}}=m-\frac{g^2a}{8}\qquad\Longleftrightarrow\qquad\mu=2\sqrt x\,\frac mg-\frac14. \qquad (5.5)$$
 
@@ -255,17 +256,31 @@ $$c=-48\,\frac{E_0(N)-2E_0(N-2)+E_0(N-4)}{\Delta(N)-2\Delta(N-2)+\Delta(N-4)},\q
 
 with $\Delta=E_1-E_0$. Both are evaluated at $m_c(N)$.
 
+**Density-matrix renormalisation group.** Exact diagonalisation stops at $N=24$. To reach the sizes that the critical point requires we use two-site DMRG on the same Hamiltonian (`dmrg.py`). The only non-trivial ingredient is the Coulomb term, which couples all pairs of sites. Writing $q_k=\tfrac12[\sigma^z_k+(-1)^k]$ for the charge on site $k$, so that $L_n=\varepsilon_0+\sum_{k\le n}q_k$,
+
+$$\sum_{n=1}^{N-1}L_n^2=\sum_{k=1}^{N}(N-k)\left(q_k^2+2\varepsilon_0q_k\right)+2\sum_{j<k}(N-k)\,q_jq_k+(N-1)\varepsilon_0^2. \qquad (6.2)$$
+
+A pair interaction whose strength depends only on the position of the right-hand site is generated exactly by a matrix-product operator in which the left-hand charge is carried along a single auxiliary channel. Adding a penalty $\lambda(Q-Q_0)^2$, $Q=\sum_ks_k$, $s_k=\tfrac12\sigma^z_k$, to select the charge sector costs one more channel. The complete Hamiltonian is the product of the operator-valued matrices
+
+$$\mathcal W_k=\begin{pmatrix}1&q_k&s_k&\sigma^+_k&\sigma^-_k&h_k\\0&1&0&0&0&2(N-k)\,q_k\\0&0&1&0&0&2\lambda\,s_k\\0&0&0&0&0&x\,\sigma^-_k\\0&0&0&0&0&x\,\sigma^+_k\\0&0&0&0&0&1\end{pmatrix}, \qquad (6.3)$$
+
+$$h_k=\frac\mu2\left[1+(-1)^k\sigma^z_k\right]+(N-k)\left(q_k^2+2\varepsilon_0q_k\right)+\lambda\left(\tfrac14-2Q_0s_k\right)+\text{const}, \qquad (6.4)$$
+
+contracted with the first row on the left and the last column on the right. The bond dimension is 6 for any $N$; no truncation of the interaction range is made. We use $\lambda=4$ (in units of $W$), which lifts all other charge sectors far above the levels of interest. Excited states are found by adding $w\sum_j|\psi_j\rangle\langle\psi_j|$, $w=20$, for the states already obtained. Each two-site problem is solved by Lanczos iteration; singular values are discarded up to a total weight of $10^{-13}$, with a cap $\chi\le120$ that is never reached (the largest bond dimension used is $80$, for the second excited state at $N=128$); sweeps continue until the energy changes by less than $10^{-10}$ in two successive sweeps.
+
+*Validation and accuracy.* The DMRG code reproduces the exact-diagonalisation energies of the three lowest states to $2\times10^{-11}$ for four parameter sets, including $Q=-1$ and $\varepsilon_0\ne0$ (`test_dmrg.py`), and the electric-field profile and entanglement entropies to $10^{-6}$. For the slowest case ($N=128$) we continued the ground-state run to 33 sweeps: the energy moved by $3\times10^{-10}g$ relative to the production value. Repeating it with a deliberately crude truncation ($\chi\le40$, discarded weight $10^{-11}$) shifts the energy by $1.2\times10^{-8}g$ (`check_dmrg_convergence.py`). The gaps at that size are $0.03$–$0.05\,g$ and the Casimir second differences are of order $10^{-6}g$, so the DMRG error is negligible in everything that follows.
+
 All scripts and raw numbers are in the repository; Appendix B lists them.
 
 # Results
 
 ## Mass gap of the massless model (P1, P2)
 
-Figure 1(a) shows the gap at $m=0$ for three lattice spacings. Plotted as $\Delta^2$ against $1/L^2$ the data collapse onto a straight line with intercept $1/\pi$, as expected for a free boson in a box. Table 1 and Fig. 1(b) give the infinite-volume gap. For $x\ge2$ it approaches the exact value monotonically from below; a linear extrapolation of the three finest spacings gives
+Figure 2(a) shows the gap at $m=0$ for three lattice spacings. Plotted as $\Delta^2$ against $1/L^2$ the data collapse onto a straight line with intercept $1/\pi$, as expected for a free boson in a box. Table 1 and Fig. 2(b) give the infinite-volume gap. For $x\ge2$ it approaches the exact value monotonically from below, but at the finest spacings the exact-diagonalisation volumes are small ($Lg=5.5$ at $x=16$) and the three-parameter finite-size fit carries most of the weight. DMRG removes this limitation: with $N=40,56,72$ the three unknowns $M$, $C$, $n_0$ are solved for exactly at volumes $Lg=14$–$36$ (Table 2). A linear extrapolation in $a^2$ of the three finest spacings, and a quadratic one through all four, give
 
-$$\frac{M_0}{g}=0.5636\;\text{(linear in }a^2)\qquad\text{or}\qquad0.5641\;\text{(linear in }a),\qquad\text{exact: }0.56419.$$
+$$\frac{M_0}{g}=0.56415\quad\text{and}\quad0.56421,\qquad\text{exact: }0.56419,$$
 
-The two extrapolations bracket the residual uncertainty; either agrees with Eq. (2.8) to $0.1\%$. The value at $x=1$ lies slightly above the trend, an indication that at $ga=1$ higher-order lattice artefacts are not negligible.
+an agreement of one part in $10^4$. The value at $x=1$ in Table 1 lies slightly above the trend, an indication that at $ga=1$ higher-order lattice artefacts are not negligible.
 
 | $x$ | 1 | 2 | 4 | 6 | 9 | 12 | 16 |
 |---|---|---|---|---|---|---|---|
@@ -273,17 +288,26 @@ The two extrapolations bracket the residual uncertainty; either agrees with Eq. 
 | $Lg$ at $N=22$ | 22.0 | 15.6 | 11.0 | 9.0 | 7.3 | 6.4 | 5.5 |
 | $M_0/g$ | 0.56463 | 0.56147 | 0.56208 | 0.56260 | 0.56287 | 0.56303 | 0.56318 |
 
-: Infinite-volume gap of the massless model.
+: Infinite-volume gap of the massless model from exact diagonalisation, $N=12$–$22$.
+
+| $x$ | 4 | 9 | 16 | 25 |
+|---|---|---|---|---|
+| $ga$ | 0.50 | 0.33 | 0.25 | 0.20 |
+| $Lg$ at $N=72$ | 36.0 | 24.0 | 18.0 | 14.4 |
+| $M_0/g$ | 0.56205 | 0.56307 | 0.56353 | 0.56376 |
+| $dM/dm$ | 1.7672 | 1.7742 | 1.7744 | 1.7752 |
+
+: Infinite-volume gap of the massless model and its slope with fermion mass from DMRG, $N=40,56,72$.
 
 ![Mass gap at $m=0$. (a) Finite-volume gap squared against inverse length squared; the dashed line is the exact $M_0^2=g^2/\pi$. (b) Infinite-volume gap against lattice spacing squared.](fig/fig1_gap.svg){width=100%}
 
-For the slope (P2) we repeat the fit at $m/g=0.02$ and $0.04$ and extrapolate the difference quotient to $m=0$: $dM/dm=1.753$ ($x=2$), $1.798$ ($x=4$) and $1.874$ ($x=9$), against $e^\gamma=1.781$. The first two agree to $1$–$2\%$. The third is $5\%$ high; at $x=9$ the largest volume is only $Lg=6.7$ and we cannot separate lattice from finite-volume error there, so we do not regard it as a meaningful discrepancy, but neither is it a confirmation.
+For the slope (P2) we repeat the fit at $m/g=0.02$ and $0.04$ and extrapolate the difference quotient to $m=0$. The DMRG values (Table 2) are $1.767$–$1.775$ and extrapolate to $dM/dm=1.775$ in the continuum, $0.3\%$ below $e^\gamma=1.781$; the spread between the two extrapolation forms is $0.001$, so the residual is not accounted for by the lattice-spacing extrapolation and is presumably due to the two-point extrapolation in $m$. Exact diagonalisation gives $1.753$ ($x=2$) and $1.798$ ($x=4$), consistent with this, and $1.874$ at $x=9$; the last value, $5\%$ high, is a finite-volume artefact of the small lattice ($Lg\le6.7$), since DMRG at the same spacing and $Lg=24$ gives $1.774$.
 
 ## Screening and confinement (P3–P5)
 
-Table 2 and Fig. 2 show the string tension. At $m=0$ the measured $\sigma$ is zero within the finite-volume diagnostic: $|\sigma|/g^2\le1\times10^{-4}$ for $\alpha=\tfrac14$ at $x=2,3$ and below $10^{-5}$ for $\alpha=\tfrac12$. Charge is screened.
+Table 3 and Fig. 3 show the string tension. At $m=0$ the measured $\sigma$ is zero within the finite-volume diagnostic: $|\sigma|/g^2\le1\times10^{-4}$ for $\alpha=\tfrac14$ at $x=2,3$ and below $10^{-5}$ for $\alpha=\tfrac12$. Charge is screened.
 
-For $m>0$ the string tension is non-zero and, for $\alpha=\tfrac12$, linear in $m$ with slope within $2\%$ of $2c$. For $\alpha=\tfrac14$ the first-order formula overestimates $\sigma$ by $12\%$ at $m/g=0.05$ and $27\%$ at $m/g=0.1$. The second-order term of Eq. (2.15) accounts for this: with it, lattice and theory agree to between $0.4\%$ and $1.4\%$ for $m/g\le0.1$ at $x=3$. A straight-line fit of $\sigma/m$ against $m$ gives an independent lattice estimate of both coefficients (last rows of Table 2).
+For $m>0$ the string tension is non-zero and, for $\alpha=\tfrac12$, linear in $m$ with slope within $2\%$ of $2c$. For $\alpha=\tfrac14$ the first-order formula overestimates $\sigma$ by $12\%$ at $m/g=0.05$ and $27\%$ at $m/g=0.1$. The second-order term of Eq. (2.15) accounts for this: with it, lattice and theory agree to between $0.4\%$ and $1.4\%$ for $m/g\le0.1$ at $x=3$. A straight-line fit of $\sigma/m$ against $m$ gives an independent lattice estimate of both coefficients (last rows of Table 3).
 
 | $m/g$ | $\alpha=\tfrac14$ lattice | theory, 1st | theory, 1st+2nd | $\alpha=\tfrac12$ lattice | theory |
 |---|---|---|---|---|---|
@@ -299,11 +323,20 @@ For $m>0$ the string tension is non-zero and, for $\alpha=\tfrac12$, linear in $
 
 ![String tension divided by $mg$. Dashed: first-order mass perturbation theory. Solid: including the second-order term of Eq. (2.15). The lattice data approach the solid line as the lattice spacing decreases.](fig/fig2_string.svg){width=100%}
 
-At $x=2$ the fitted coefficients are $0.1661$ and $-0.394$ ($\alpha=\tfrac14$) and at $x=1$ they are $0.187$ and $-0.57$, so the approach to the continuum values is from one side and consistent with $O(a^2)$ artefacts, but three spacings at different volumes do not justify a formal extrapolation.
+At the coarser spacings $x=2$ and $x=1$ the fitted coefficients are $0.1661$, $-0.394$ and $0.187$, $-0.57$ ($\alpha=\tfrac14$): the approach to the continuum is from one side. DMRG with $N=48$ and $64$ extends the test to finer lattices at volumes $Lg=12$–$32$, where the residual at $m=0$ is below $5\times10^{-5}g^2$:
+
+| $x$ | $ga$ | $\alpha=\tfrac14$: linear | quadratic | lattice/theory, $m/g=0.025$–$0.1$ | $\alpha=\tfrac12$: linear | quadratic | lattice/theory |
+|---|---|---|---|---|---|---|---|
+| 4 | 0.50 | 0.1614 | $-0.360$ | 1.008–1.013 | 0.3222 | $-0.045$ | 0.993–1.003 |
+| 9 | 0.33 | 0.1598 | $-0.349$ | 1.002–1.008 | 0.3216 | $-0.041$ | 0.992–1.001 |
+| 16 | 0.25 | 0.1583 | $-0.334$ | 0.993–1.007 | 0.3228 | $-0.031$ | 0.999–1.006 |
+| theory | | 0.1599 | $-0.358$ | 1 | 0.3199 | 0 | 1 |
+
+At every spacing from $ga=0.58$ down to $0.25$ the string tension agrees with Eq. (2.15) to about $1\%$ over the whole mass range, and the linear coefficient for $\alpha=\tfrac14$ is within $1\%$ of $c$. The quadratic coefficient is reproduced to $1$–$7\%$. For $\alpha=\tfrac12$, where the second-order term vanishes, the data show a small negative curvature, $-0.03$ to $-0.045$, which is the size expected of a third-order term and is not predicted by Eq. (2.15). The scatter of the fitted coefficients between spacings ($\pm1\%$) is comparable to their difference from theory, so we do not attempt a formal continuum extrapolation of the coefficients; the statement is agreement at the $1\%$ level at each of four lattice spacings.
 
 ## The critical point at θ = π (P6, P7, P11, P12)
 
-Figure 4(a) shows the level ratio $R$ against $m$ for $x=0.5$. The curves for successive sizes cross, and the crossing point converges rapidly. Table 3 lists the crossing mass, the ratio there, and $c$ and $v$ from Eq. (6.1), for three lattice spacings. We deliberately work at coarse spacing, $ga=2$, $1.41$, $1$: the universality class does not depend on $a$, and coarse lattices give the largest physical volume ($Lg=44$, $31$–$34$, $22$ respectively), which is what the scaling regime requires. At $x\ge2$ no crossing exists for $N\le18$.
+Figure 4(a) shows the level ratio $R$ against $m$ for $x=0.5$. The curves for successive sizes cross, and the crossing point converges rapidly. Table 4 lists the crossing mass, the ratio there, and $c$ and $v$ from Eq. (6.1), for three lattice spacings. We deliberately work at coarse spacing, $ga=2$, $1.41$, $1$: the universality class does not depend on $a$, and coarse lattices give the largest physical volume ($Lg=44$, $31$–$34$, $22$ respectively), which is what the scaling regime requires. At $x\ge2$ no crossing exists for $N\le18$.
 
 | $N$ | $x{=}0.25$: $m_c$ | $R$ | $c$ | $v$ | $x{=}0.5$: $m_c$ | $R$ | $c$ | $v$ | $x{=}1$: $m_c$ | $R$ | $c$ | $v$ |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -323,7 +356,7 @@ Figure 4(a) shows the level ratio $R$ against $m$ for $x=0.5$. The curves for su
 
 **Existence of the transition (P6).** At the crossing the gap falls as $1/(L+\ell)$: the velocity estimator of Eq. (6.1), which is the inverse slope of $1/\Delta$ against $L$, is constant to three digits over $N=16$–$22$ at $x=0.5$. Away from the crossing, on either side, the gap saturates.
 
-**Ratio (P7).** At the three spacings $R$ approaches $\tfrac32$ from below, from below, and from above (Fig. 4b). The $1/N^2$ extrapolations are $1.486$, $1.488$ and $1.500$. At $x=0.5$ the sequence has essentially converged and sits $0.8\%$ below $\tfrac32$; we return to this in Section 8.
+**Ratio (P7).** At the three spacings $R$ approaches $\tfrac32$ from below, from below, and from above (Fig. 4b). The $1/N^2$ extrapolations are $1.486$, $1.488$ and $1.500$. At $x=0.5$ the sequence appears to have converged $0.8\%$ below $\tfrac32$; Section 7.7 shows that this is a turning point of a non-monotonic approach.
 
 **Velocity (P12).** $v=0.989$ at $x=0.5$, and $0.98$, $0.96$ ($1/N^2$ extrapolations) at $x=0.25$, $1$. The velocity is not protected on the lattice and is $1$ only in the continuum limit; that it is within a few per cent of $1$ at $ga\sim1$–$2$ is a consequence of the improved mass (5.5) and is not a test of the continuum prediction.
 
@@ -331,7 +364,7 @@ Figure 4(a) shows the level ratio $R$ against $m$ for $x=0.5$. The curves for su
 
 ## The conformal towers (P7, P8)
 
-The crossing analysis uses only two excited levels. A much more stringent test is the full low-lying spectrum, including degeneracies. Table 4 and Fig. 5 give the first five excitation energies in units of the first, at $x=0.5$ and fixed $m/g=0.356$.
+The crossing analysis uses only two excited levels. A much more stringent test is the full low-lying spectrum, including degeneracies. Table 5 and Fig. 5 give the first five excitation energies in units of the first, at $x=0.5$ and fixed $m/g=0.356$.
 
 | $N$ | $Q=0$: $n=2$ | 3 | 4 | 5 | $Q=-1$: $n=2$ | 3 | 4 | 5 |
 |---|---|---|---|---|---|---|---|---|
@@ -344,15 +377,27 @@ The crossing analysis uses only two excited levels. A much more stringent test i
 
 : Excitation energies $(E_n-E_0)/(E_1-E_0)$ within the $Q=0$ and $Q=-1$ sectors at $x=0.5$, $m/g=0.356$, $\theta=\pi$.
 
-![Excitation energies in units of the lowest, against $1/N^2$. Dashed lines are the BCFT values. (a) Neutral sector: the identity tower, with the two-fold degenerate level at $h=4$. (b) Charge $-1$: the $\varepsilon$ tower, with the two-fold degenerate level at $h=\tfrac92$.](fig/fig5_towers.svg){width=100%}
+![Excitation energies in units of the lowest, against $1/N^2$. Circles: exact diagonalisation at $m/g=0.356$; squares: DMRG at $m/g=0.3573$. Dashed lines are the BCFT values. (a) Neutral sector: the identity tower, with the two-fold degenerate level at $h=4$. (b) Charge $-1$: the $\varepsilon$ tower, with the two-fold degenerate level at $h=\tfrac92$.](fig/fig5_towers.svg){width=100%}
 
 In the neutral sector the four ratios are within $0.2\%$, $0.9\%$, $0.8\%$ and $2.2\%$ of the identity-tower values at $N=20$ and all are still moving toward them. The two states predicted to be degenerate at $h=4$ ($L_{-4}|0\rangle$ and $L_{-2}^2|0\rangle$) appear as a pair split by $0.16\%$ of their energy, with the splitting decreasing monotonically (from $0.68\%$ at $N=12$). In the charge $-1$ sector the ratios are within $1.8\%$, $3.9\%$, $6.5\%$ and $3.9\%$ of $2,3,4,4$, converge more slowly, and again the degenerate pair is forming (splitting $2.8\%$ at $N=20$, down from $9.9\%$ at $N=12$). The $Q=+1$ sector reproduces the identity pattern ($1.485$, $1.948$, $1.964$, $2.378$ at $N=20$) at an energy offset that grows linearly with $N$ in units of the gap, i.e. is a constant in physical units, as expected for a charge bound to the wall.
+
+DMRG extends both towers to $N=64$ at the critical mass of this lattice, $m/g=0.3573$ (Section 7.7):
+
+| $N$ | $Q=0$: $n=2$ | 3 | 4 | 5 | $Q=-1$: $n=2$ | 3 | 4 | 5 |
+|---|---|---|---|---|---|---|---|---|
+| 24 | 1.4926 | 1.9762 | 1.9779 | 2.4471 | 1.9784 | 2.9250 | 3.8264 | 3.9154 |
+| 32 | 1.4944 | 1.9839 | 1.9843 | 2.4643 | 1.9863 | 2.9537 | 3.8953 | 3.9491 |
+| 48 | 1.4966 | 1.9901 | 1.9919 | 2.4802 | 1.9930 | 2.9766 | 3.9480 | 3.9757 |
+| 64 | 1.4978 | 1.9934 | 1.9950 | 2.4865 | 1.9957 | 2.9858 | 3.9686 | 3.9858 |
+| **BCFT** | $\mathbf{3/2}$ | $\mathbf2$ | $\mathbf2$ | $\mathbf{5/2}$ | $\mathbf2$ | $\mathbf3$ | $\mathbf4$ | $\mathbf4$ |
+
+At $N=64$ every one of the eight ratios is within $0.8\%$ of its predicted value (the neutral ones within $0.54\%$), all approach it monotonically, and the predicted degenerate pairs are split by $0.08\%$ ($Q=0$) and $0.4\%$ ($Q=-1$).
 
 The alternative boundary conditions are excluded by a wide margin: free boundaries would put the second neutral level at ratio $3$, not $\tfrac32$.
 
 ## Central charge (P9)
 
-The Casimir estimator (6.1) gives the values in Table 3 and Fig. 6(a). At $x=0.5$ it has a broad plateau, $c=0.489$, $0.490$, $0.488$, $0.485$, $0.483$ for $N=16$–$24$, within $2$–$4\%$ of $\tfrac12$ and drifting slowly downward. The estimator is, however, very sensitive to the mass at which it is evaluated: at fixed $m/g=0.357$, only $0.0017$ below the crossing, it gives $c=0.542$–$0.545$, constant over the same sizes, so that $dc/dm\approx-30/g$. An uncertainty of $\pm0.001g$ in the critical mass therefore translates into $\pm0.03$ in $c$, and our result is $c=0.50(4)$. At the other two spacings it is still drifting — upward through $0.41$ at $x=0.25$, downward through $0.68$ at $x=1$ — so that the three sequences bracket $\tfrac12$ but only one of them can be said to have converged. This is the first point at which the limitations of 24 sites are clearly visible: the estimator is a ratio of second differences and amplifies corrections to scaling.
+The Casimir estimator (6.1) gives the values in Table 4 and Fig. 6(a). At $x=0.5$ it has a broad plateau, $c=0.489$, $0.490$, $0.488$, $0.485$, $0.483$ for $N=16$–$24$, within $2$–$4\%$ of $\tfrac12$ and drifting slowly downward. The estimator is, however, very sensitive to the mass at which it is evaluated: at fixed $m/g=0.357$, only $0.0017$ below the crossing, it gives $c=0.542$–$0.545$, constant over the same sizes, so that $dc/dm\approx-30/g$. An uncertainty of $\pm0.001g$ in the critical mass therefore translates into $\pm0.03$ in $c$, and the exact-diagonalisation result is $c=0.50(4)$; Section 7.7 reduces the uncertainty sixfold. At the other two spacings it is still drifting — upward through $0.41$ at $x=0.25$, downward through $0.68$ at $x=1$ — so that the three sequences bracket $\tfrac12$ but only one of them can be said to have converged. This is the first point at which the limitations of 24 sites are clearly visible: the estimator is a ratio of second differences and amplifies corrections to scaling.
 
 ![(a) Central charge from the Casimir energy, Eq. (6.1), and (b) velocity, against $1/N$, at the crossing point.](fig/fig6_c_v.svg){width=100%}
 
@@ -364,48 +409,135 @@ $$\beta/\nu=0.1263\qquad(\text{Ising: }0.125).$$
 
 Without the shift ($n_0=0$) the same fit gives $0.104$, so the agreement relies on the BCFT form (4.7); it is a consistency check of the whole picture rather than an unbiased measurement of the exponent (Fig. 7a).
 
-The entanglement entropy (Fig. 7b) is dominated at these sizes by an oscillation between even and odd cuts of amplitude $\approx0.4$, larger than the total variation of the logarithm in Eq. (4.8). Fitting each parity separately gives $c=0.43$ (even) and $0.26$ (odd) at $N=22$; averaging adjacent cuts gives $0.36$. All three increase slowly with $N$. **We cannot extract $c$ from the entanglement entropy at $N\le22$**, and report this as a failure of the method at these sizes rather than of the prediction.
+The entanglement entropy (Fig. 7b) is dominated at these sizes by an oscillation between even and odd cuts of amplitude $\approx0.4$, larger than the total variation of the logarithm in Eq. (4.8). Fitting each parity separately gives $c=0.43$ (even) and $0.26$ (odd) at $N=22$; averaging adjacent cuts gives $0.36$. All three increase slowly with $N$. Single-parity fits of the entanglement entropy therefore do not give $c$ at $N\le22$. Section 7.7 identifies the reason and a remedy.
 
 ![(a) Mid-chain electric field against $N+n_0$ on logarithmic axes; the dashed line has slope $-\tfrac18$. (b) Entanglement entropy against the logarithm of the chord length at $N=22$; the dashed line has the slope $c/6$ for $c=\tfrac12$.](fig/fig7_order_ent.svg){width=100%}
 
-## The critical mass
+## Large lattices: the finite-size questions resolved (P7, P9–P11)
 
-Table 3 gives $m_c/g\approx0.392$, $0.358$ and $0.345$ at $ga=2$, $1.41$ and $1$. These are properties of the lattice model at fixed spacing, they are well determined (the $x=0.5$ value is stable to four digits), and they decrease toward the continuum value $m_c/g=0.333561(4)$ of Ref. [@act] (earlier: $0.3335(2)$ [@byrnes], $0.325(20)$ [@hamer82]). We have not attempted a continuum extrapolation: three spacings with $ga\ge1$ are not in the regime where $m_c(a)=m_c+O(a^2)$ can be trusted, and finer lattices need $N\gtrsim30$ to reach the scaling volume.
+The exact-diagonalisation results of Sections 7.3–7.6 leave three things unsettled at $N\le24$: the ratio at the crossing sits $0.9\%$ below $\tfrac32$ and does not move; the Casimir central charge depends steeply on the mass at which it is evaluated; and the entanglement entropy gives no usable value of $c$. DMRG on chains of $N=24,32,48,64,96,128$ sites at $x=0.5$ ($Lg$ up to $181$) settles all three. Table 6 and Figs. 8–9 give the results.
 
-Against this, the analytic estimates of Section 3.2 fare poorly. The classical value $0.158$ is a factor of two too small. The Gaussian value $0.265$ is closer but belongs to a first-order transition: the Gaussian state predicts a finite gap and a jump in $\langle E\rangle$ at the transition, whereas the lattice shows a gap closing as $1/L$ and a conformal spectrum. The failure is qualitative. Its origin is that a Gaussian state cannot represent the critical Ising fixed point, which is a free Majorana fermion and not a free boson.
+| $N_1$–$N_2$ | $m_\times/g$ | $R_\times$ | $1/\nu$ | $m_{3/2}/g$ at $N_2$ | $c$ at $m_\times$ | $c$ at $m_{3/2}$ |
+|---|---|---|---|---|---|---|
+| 24–32 | 0.35851 | 1.4869 | 0.925 | 0.35639 | | |
+| 32–48 | 0.35806 | 1.4897 | 0.946 | 0.35692 | 0.4810 | 0.5364 |
+| 48–64 | 0.35771 | 1.4929 | 0.962 | 0.35711 | 0.4849 | 0.5237 |
+| 64–96 | 0.35749 | 1.4955 | 0.974 | 0.35723 | 0.4890 | 0.5124 |
+| 96–128 | 0.35738 | 1.4974 | 0.982 | 0.35727 | 0.4934 | 0.5075 |
+
+: DMRG at $x=0.5$. $m_\times$: mass at which $R(N_1)=R(N_2)$; $R_\times$: the ratio there; $1/\nu$: from the growth of $dR/dm$ between the two sizes; $m_{3/2}$: mass at which $R(N_2)=\tfrac32$; $c$: Casimir central charge from Eq. (4.6) solved on three consecutive sizes ending at $N_2$, evaluated at either pseudo-critical mass.
+
+![DMRG at $ga=1.41$. (a) The level ratio at the crossing point: beyond the plateau seen in exact diagonalisation it rises toward $\tfrac32$. (b) The two pseudo-critical masses approach a common limit from opposite sides.](fig/fig8_dmrg_ratio.svg){width=100%}
+
+**The ratio.** The plateau at $R_\times=1.486$ seen for $N=16$–$24$ is a turning point, not a limit. For larger sizes $R_\times$ rises monotonically, $1.4869$, $1.4897$, $1.4929$, $1.4955$, $1.4974$; a straight line in $1/N$ through the last three points extrapolates to $1.502$, and we quote
+
+$$R_\times(N\to\infty)=1.500(2).$$
+
+The approach to the fixed point is non-monotonic, which is why the small-size data appeared to converge to the wrong value; Ref. [@act] found corrections of both signs in the same quantity.
+
+**The critical mass at this lattice spacing.** The crossing mass decreases with $N$ and the mass at which $R=\tfrac32$ increases; at $N=128$ they are $0.35738$ and $0.35727$. The two criteria therefore bracket the critical mass of the lattice model at $x=0.5$:
+
+$$m_c/g=0.35733(6)\qquad(ga=1.41).$$
+
+**The exponent $\nu$.** The effective $1/\nu$ rises steadily, $0.925,\,0.946,\,0.962,\,0.974,\,0.982$, and extrapolates linearly in $1/N$ to $1.00(1)$.
+
+**Central charge from the Casimir energy.** The steep mass dependence found in Section 7.5 is turned to advantage by evaluating the estimator at both pseudo-critical masses. Since the true critical mass lies between them, the two sequences bound $c$ from below and above (Fig. 9a): $0.481<c<0.536$, $0.485<c<0.524$, $0.489<c<0.512$, $0.493<c<0.508$ for the four triplets of sizes. The interval shrinks around
+
+$$c=0.500(7).$$
+
+![Central charge from DMRG at $ga=1.41$. (a) Casimir estimator evaluated at the two pseudo-critical masses, which bound $c$ from either side. (b) Local logarithmic slope of the half-chain entanglement entropy between consecutive sizes: cuts of a single parity do not approach $\tfrac12$, their average (slope taken against $\ln(N+n_0)$) does.](fig/fig9_dmrg_c.svg){width=100%}
+
+**Entanglement entropy: why it failed, and the cure.** With all sizes having even $N/2$ we can follow the half-chain entropy $S(N/2)$ at fixed parity of the cut. Its logarithmic slope gives $c\approx0.63$ for the cut at $N/2$ and $c\approx0.37$ for the neighbouring cut, with almost no drift up to $N=128$ (Fig. 9b): single-parity estimates are not merely slow, they converge — on the scale of accessible sizes — to wrong values placed symmetrically about $\tfrac12$. The explanation is that the alternating part of the entropy is tied to the order parameter. Defining $\delta S=S(N/2)-\tfrac12[S(N/2-1)+S(N/2+1)]$, we find across all six sizes (at $m/g=0.358$)
+
+$$\delta S=-0.012-1.254\,\langle L\rangle_{\rm mid},$$
+
+with a maximum residual of $5\times10^{-4}$ against a total variation of $0.063$. Because $\langle L\rangle_{\rm mid}\propto N^{-1/8}$ at criticality, the alternating term decays so slowly that over a decade in $N$ it is indistinguishable from an additional logarithm, shifting the apparent central charge by about $\pm0.13$. It cancels in the parity average $\bar S=\tfrac12\{S(N/2)+\tfrac12[S(N/2-1)+S(N/2+1)]\}$, whose local slope is
+
+$$\begin{aligned}c&=0.448,\;0.462,\;0.473,\;0.481,\;0.488&&(\text{slope in }\ln N),\\ c&=0.499,\;0.500,\;0.500,\;0.501,\;0.502&&(\text{slope in }\ln(N+n_0)),\end{aligned}$$
+
+at the mass $m_{3/2}$ (at $m_\times$: $0.478$ and $0.492$ for the last pair). With the extrapolation length $n_0=3.2$ taken from the gap the estimate is flat at $0.50$; without it, it approaches $\tfrac12$ from below. We quote $c=0.49(1)$ from the entanglement entropy.
+
+**Order parameter.** The local exponent of the mid-chain field between consecutive sizes, at $m_{3/2}$, is $0.1282$, $0.1272$, $0.1266$, $0.1263$, $0.1264$ when measured against $N+n_0$ and $0.1151$, $0.1177$, $0.1198$, $0.1214$, $0.1229$ against $N$. The two sequences approach each other from opposite sides and bracket the Ising value; at $m_\times$ they are $0.1232$ and $0.1194$ for the last pair. We quote $\beta/\nu=0.124(3)$.
+
+## The critical mass, the velocity, and their continuum limits (P7, P12)
+
+To take the continuum limit we repeat the DMRG calculation at $x=1,2,4,8,16$ with up to 192 sites (Table 7). At each spacing the mass $m_{3/2}(N)$ at which $R=\tfrac32$ is extrapolated to $N\to\infty$ from the two largest sizes assuming a correction $\propto N^{-p}$; we give $p=2$ and $p=3$ and use their difference as the finite-size uncertainty. The crossing mass $m_\times$ provides an independent check.
+
+| $x$ | $ga$ | $N$ | $Lg$ | $m_{3/2}(N)/g$ | $N\to\infty$: $p=2$ | $p=3$ | $m_\times/g$ | $R_\times$ | $v$ |
+|---|---|---|---|---|---|---|---|---|---|
+| 0.5 | 1.41 | 64, 96, 128 | 181 | 0.35711, 0.35723, 0.35727 | 0.35732 | 0.35730 | 0.35738 | 1.4974 | 0.9605 |
+| 1 | 1.00 | 48, 64 | 64 | 0.34207, 0.34218 | 0.34234 | 0.34227 | 0.34256 | 1.4968 | 0.9742 |
+| 2 | 0.71 | 64, 96 | 68 | 0.33688, 0.33684 | 0.33681 | 0.33682 | 0.33676 | 1.5007 | 0.9840 |
+| 4 | 0.50 | 96, 128, 192 | 96 | 0.33504, 0.33495, 0.33496 | 0.33497 | 0.33496 | 0.33498 | 1.4998 | 0.9920 |
+| 8 | 0.35 | 96, 128, 192 | 68 | 0.33505, 0.33441, 0.33421 | 0.33405 | 0.33413 | 0.33377 | 1.5039 | 0.9937 |
+| 16 | 0.25 | 96, 128, 192 | 48 | 0.33744, 0.33507, 0.33404 | 0.33321 | 0.33361 | 0.33167 | 1.5151 | 0.9906 |
+
+: Critical mass at each lattice spacing from DMRG. $Lg$ is the physical length of the largest chain; $m_\times$ and $R_\times$ refer to the crossing of the two largest sizes; $v$ is the velocity from Eq. (6.1) at the extrapolated critical mass.
+
+**Universality across lattice spacings.** Wherever the physical volume exceeds $Lg\approx60$ the two criteria agree to better than $3\times10^{-4}g$, and the ratio at the crossing is $R_\times=1.4974$, $1.4968$, $1.5007$, $1.4998$ at $ga=1.41$, $1$, $0.71$, $0.5$ — the same number, $\tfrac32$ to within $0.2\%$, at four lattice spacings differing by a factor of eight in $a^2$. At $x=4$ the three sizes give $m_{3/2}=0.33504$, $0.33495$, $0.33496$ and $m_\times=0.33498$: the critical mass at this spacing is $0.33496(2)$. At $x=8$ and $16$ the volumes are smaller ($Lg\le68$ and $48$), $m_{3/2}$ is still drifting and $R_\times$ is $0.3\%$ and $1\%$ above $\tfrac32$; the extrapolated values carry correspondingly larger uncertainties, $0.33409(4)$ and $0.3334(2)$.
+
+**Continuum limit of the critical mass.** Lattice artefacts are $O(a^2)$ with the improved mass (5.5). Weighted fits of the extrapolated masses give
+
+| points | form | $m_c/g$ |
+|---|---|---|
+| $x\ge1$ (5 points) | quadratic in $a^2$ | 0.33354 |
+| $x\ge2$ (4 points) | quadratic in $a^2$ | 0.33320 |
+| $x\ge2$ (4 points) | linear in $a^2$ | 0.33314 |
+| $x\ge4$ (3 points) | linear in $a^2$ | 0.33318 |
+
+and changing the finite-size exponent between $p=2$ and $p=3$ moves each by at most $1.3\times10^{-4}$. We quote
+
+$$\frac{m_c}{g}=0.3333(2),$$
+
+where the uncertainty covers the spread of fit forms and finite-size assumptions (Fig. 10). This agrees with $0.333561(4)$ of Ref. [@act] to $0.08\%$ ($1.3$ of our standard uncertainties), and with $0.3335(2)$ [@byrnes] and $0.325(20)$ [@hamer82]. Our value comes from chains an order of magnitude shorter than those of Ref. [@act] and has fifty times their uncertainty; it is a consistency check by an independent code, not an improvement.
+
+![Critical mass against lattice spacing squared. Circles: $m_{3/2}$ on the largest chain. Squares with bars: extrapolation to $N\to\infty$, the bar spanning $p=2$ and $p=3$. Dashed line: Ref. [8].](fig/fig10_continuum.svg){width=62%}
+
+**Velocity (P12).** The velocity at criticality is not protected on the lattice. It is $0.9605$ at $ga=1.41$ (converged in $N$ to four digits) and rises monotonically toward $1$ as the lattice is refined: $0.974$, $0.984$, $0.992$, $0.994$ at $ga=1$, $0.71$, $0.5$, $0.35$. (The $x=16$ value, $0.991$, is from the smallest physical volume and is not used.) Extrapolating $x=2,4,8$ linearly in $a$ gives $1.005$ and linearly in $a^2$ gives $0.998$:
+
+$$v(a\to0)=1.001(4),$$
+
+so Lorentz invariance is recovered in the continuum limit.
+
+**The analytic estimates.** Against these numbers the estimates of Section 3.2 fare poorly. The classical value $0.158$ is a factor of two too small. The Gaussian value $0.265$ is closer but belongs to a first-order transition: the Gaussian state predicts a finite gap and a jump in $\langle E\rangle$ at the transition, whereas the lattice shows a gap closing as $1/L$ up to $Lg=181$ and a conformal spectrum. The failure is qualitative. Its origin is that a Gaussian state cannot represent the critical Ising fixed point, which is a free Majorana fermion and not a free boson.
 
 # Discussion
 
 ## What is established
 
-Table 5 collects the outcome.
+Table 8 collects the outcome.
 
 | | Prediction | Theory | Lattice | Status |
 |---|---|---|---|---|
-| P1 | $M_0/g$ | 0.56419 | 0.5636–0.5641 | confirmed, 0.1% |
-| P2 | $dM/dm$ | 1.781 | 1.753, 1.798 (1.874 at small volume) | confirmed, 1–2%, where volume is adequate |
-| P3 | $\sigma(m=0)$ | 0 | $<10^{-4}g^2$ | confirmed |
-| P4 | linear coeff. of $\sigma$, $\alpha=\tfrac14$; $\tfrac12$ | 0.1599; 0.3199 | 0.1588; 0.3268 | confirmed, 1–2% |
-| P5 | quadratic coeff., $\alpha=\tfrac14$; $\tfrac12$ | $-0.358$; 0 | $-0.328$; $-0.025$ | confirmed, ~10% |
-| P6 | gapless point at $\theta=\pi$ | yes | yes | confirmed |
-| P7 | $Q=0$ ratios | 1.5, 2, 2, 2.5 | 1.497, 1.981, 1.985, 2.445 | confirmed, 0.2–2.2% |
-| P8 | $Q=-1$ ratios | 2, 3, 4, 4 | 1.965, 2.884, 3.739, 3.846 | confirmed, 2–7%, converging |
-| P9 | $c$ (Casimir) | 0.5 | 0.48–0.49 at $ga=1.41$; 0.41↑, 0.68↓ elsewhere | supported |
-| P10 | $\beta/\nu$ | 0.125 | 0.126 (with $n_0$ from gap); 0.104 (raw) | consistent |
-| P11 | $\nu$ | 1 | $1.0\pm0.1$ | consistent |
-| P12 | $v$ | 1 (continuum) | 0.96–0.99 at $ga=1$–2 | not tested in the continuum |
+| P1 | $M_0/g$ | 0.56419 | 0.56415–0.56421 (continuum) | confirmed, $10^{-4}$ |
+| P2 | $dM/dm$ | 1.781 | 1.775 (continuum) | confirmed, 0.3% |
+| P3 | $\sigma(m=0)$ | 0 | $<5\times10^{-5}g^2$ at four spacings | confirmed |
+| P4 | linear coeff. of $\sigma$, $\alpha=\tfrac14$; $\tfrac12$ | 0.1599; 0.3199 | 0.158–0.161; 0.322–0.327 | confirmed, 1–2% |
+| P5 | quadratic coeff., $\alpha=\tfrac14$; $\tfrac12$ | $-0.358$; 0 | $-0.33$ to $-0.36$; $-0.03$ to $-0.045$ | confirmed, 1–7% ($\alpha=\tfrac14$) |
+| P6 | gapless point at $\theta=\pi$ | yes | gap $\propto1/L$ up to $Lg=181$ | confirmed |
+| P7 | $Q=0$ ratios | 1.5, 2, 2, 2.5 | 1.498, 1.993, 1.995, 2.487 ($N=64$); $R_\times\to1.500(2)$ | confirmed |
+| P8 | $Q=-1$ ratios | 2, 3, 4, 4 | 1.996, 2.986, 3.969, 3.986 ($N=64$) | confirmed |
+| P9 | $c$ | 0.5 | 0.500(7) Casimir; 0.49(1) entanglement | confirmed |
+| P10 | $\beta/\nu$ | 0.125 | 0.124(3) | confirmed |
+| P11 | $1/\nu$ | 1 | 1.00(1) | confirmed |
+| P12 | $v$ in the continuum | 1 | 1.001(4) | confirmed |
+| — | $m_c/g$ (no prediction) | — | 0.3333(2); Ref. [@act]: 0.333561(4) | consistent |
 
 : Summary of tests.
 
-## Open points and sources of error
+## Sources of error and remaining limitations
 
-**The ratio at the crossing, $x=0.5$.** The crossing value of $R$ is $1.4857$–$1.4859$ for every size from $N=16$ to $24$ — a fixed point to four digits — but it sits $0.9\%$ below $\tfrac32$, while the same ratio at fixed $m/g=0.356$ is $1.4968$ and rising, and at $m/g=0.355$ it passes through $\tfrac32$ between $N=18$ and $20$ and keeps rising. Since $dR/dm\approx-4$ at $N=22$, a shift of the true critical mass by $-0.003g$ relative to the crossing would account for the difference. Crossing points converge to $m_c$ as $N^{-1/\nu-\omega}$ where $\omega$ is the leading correction exponent, so a small $\omega$, or two corrections of opposite sign that nearly cancel in the crossing but not in $R$, would produce exactly this pattern. Ref. [@act], working with chains of several hundred sites, fits the finite-size dependence of the same criterion with $N^{-3}$ and $N^{-4}$ terms of opposite sign and large coefficients, which supports the view that sizes $N\le24$ are not asymptotic and that the approach is not monotonic. We cannot resolve this with exact diagonalisation.
+**No statistical error.** Both methods are deterministic. Exact-diagonalisation eigenvalues are converged to $10^{-10}$; DMRG energies to about $3\times10^{-10}g$ (Section 6). Every uncertainty quoted is systematic — finite volume, finite lattice spacing, the choice of extrapolation form — and is estimated from the spread between alternative reasonable choices, which we have listed in each case. These are not statistical confidence intervals.
 
-**Central charge.** Only one of three lattice spacings has converged. The estimator is also steeply mass-dependent (Section 7.5). The honest statement is $c=0.50(4)$ at $ga=1.41$ and "consistent with $\tfrac12$" elsewhere.
+**Non-monotonic finite-size corrections.** The most instructive lesson of the calculation is the ratio $R_\times$ at $x=0.5$: constant at $1.4857$–$1.4859$ for $N=16$–$24$, to four digits, and yet not converged — it rises to $1.4974$ by $N=128$. A quantity that is stationary over a range of sizes is not thereby at its limit. The same caution applies to our finest lattices, $x=8$ and $16$, where the largest volumes ($Lg=68$, $48$) are comparable to those at which the coarse lattice was still drifting; this is the dominant uncertainty in $m_c$.
 
-**Continuum limit.** Only the $\theta=0$ results (P1–P5) are at lattice spacings fine enough to speak of a continuum limit, and even there the string tension is limited to $ga\ge0.58$ by the volume requirement. All $\theta=\pi$ results are universal quantities measured at coarse spacing, which is legitimate for universal quantities and not for $m_c$.
+**What limits the critical mass.** A more precise $m_c$ needs chains of several hundred sites at $x\ge8$, as in Ref. [@act]. Our dense, symmetry-unaware DMRG code scales as $N\chi^3$ and took 15–25 minutes per parameter point at $N=192$; a code exploiting charge conservation would reach those sizes, but that is engineering, not physics.
 
-**Systematic versus statistical error.** Exact diagonalisation has no statistical error; eigenvalues are converged to $10^{-10}$. Every uncertainty quoted is systematic — finite volume, finite lattice spacing, and the choice of extrapolation form — and we have indicated its size by quoting alternative extrapolations rather than a single error bar.
+**String tension coefficients.** The linear coefficient agrees with theory to $1\%$ at four lattice spacings, but the scatter between spacings is of the same size, so no continuum extrapolation of the coefficients is quoted. For $\alpha=\tfrac12$ a small negative curvature in $m$ is seen at all spacings; Eq. (2.15) stops at second order and makes no prediction for it.
+
+**Slope of the gap.** $dM/dm$ is $0.3\%$ below $e^\gamma$ in the continuum. The lattice-spacing extrapolation is stable to $0.06\%$, so the residual comes from the extrapolation $m\to0$, which uses only $m/g=0.02$ and $0.04$.
+
+**Charge $-1$ tower.** The $\varepsilon$ tower converges more slowly than the identity tower; its fourth and fifth levels are still $0.8\%$ and $0.4\%$ from their limits at $N=64$, the largest size at which we computed six states.
 
 **Open boundaries and $\theta$.** With open boundaries the $2\pi$ periodicity in $\theta$ is lost in each fixed-charge sector and restored only by comparing sectors; this is why $Q=0$ and $Q=-1$ realise different boundary conditions at the same $\theta$.
 
@@ -415,7 +547,7 @@ It is tempting to read Section 2.2 as a template: an anomaly converts a would-be
 
 # Conclusion
 
-Starting from the Lagrangian of two-dimensional QED we derived the mass gap from the anomaly, the bosonized Hamiltonian, the screening of charge at $m=0$ and its confinement at $m\ne0$, the $Z_2$ transition at $\theta=\pi$, and — from the observation that the background field pins both walls of an open system to the same vacuum — the complete finite-size spectrum at criticality. Exact diagonalisation of the lattice gauge theory on up to 24 sites confirms the mass gap to $0.1\%$, the string tension through second order in the fermion mass to $1$–$2\%$, and the Ising boundary-CFT spectrum in two charge sectors including its degeneracies. The Casimir central charge and the exponents $\nu$ and $\beta$ are consistent with Ising values at the few-per-cent to ten-per-cent level. Simple analytic estimates of the critical mass fail, the Gaussian variational method qualitatively so. The continuum critical mass is beyond the method, and has in any case been determined to five digits by tensor networks [@act].
+Starting from the Lagrangian of two-dimensional QED we derived the mass gap from the anomaly, the bosonized Hamiltonian, the screening of charge at $m=0$ and its confinement at $m\ne0$, the $Z_2$ transition at $\theta=\pi$, and — from the observation that the background field pins both walls of an open system to the same vacuum — the complete finite-size spectrum at criticality. Two independent lattice calculations, exact diagonalisation and DMRG with an exact matrix-product representation of the Coulomb interaction, confirm all twelve predictions: the mass gap to one part in $10^4$ in the continuum limit; the string tension through second order in the fermion mass to $1\%$; the Ising boundary-CFT spectrum in two charge sectors, including its degeneracies, with the ratio of the two lowest gaps equal to $\tfrac32$ within $0.2\%$ at four lattice spacings; the central charge $c=0.500(7)$; the exponents $1/\nu=1.00(1)$ and $\beta/\nu=0.124(3)$; and the recovery of Lorentz invariance, $v=1.001(4)$. The critical mass, $m_c/g=0.3333(2)$, agrees with the best tensor-network determination. Two findings go beyond confirmation. First, finite-size corrections at this critical point are non-monotonic, so that data which are stationary over a range of sizes can still be $1\%$ from their limit. Second, on the staggered lattice the alternating part of the entanglement entropy is proportional to the order parameter and decays only as $N^{-1/8}$; fits at fixed parity then return central charges near $0.63$ and $0.37$, and the parity average is required. Simple analytic estimates of the critical mass fail, the Gaussian variational method qualitatively so.
 
 # Appendix A: Derivation of the Gaussian effective potential {.unnumbered}
 
@@ -442,16 +574,27 @@ which is Eq. (3.4) after dividing by $M^2$, with $k=\kappa/M^2=\pi c\,m/g$. At $
 | `run_string.py`, `analyze_string.py` | Table 2 | 18 min |
 | `run_crit.py`, `analyze_crit.py` | Table 3 | 45 min ($N\le22$); 1.5 h more for $N=24$ |
 | `run_tower.py`, `run_sectors.py` | Table 4 | 12 min |
-| `run_groundstate.py`, `analyze_extra.py` | Sec. 7.5, $\nu$ | 5 min |
+| `run_groundstate.py`, `analyze_extra.py` | Sec. 7.6, $\nu$ (exact diagonalisation) | 5 min |
+| `dmrg.py`, `test_dmrg.py` | DMRG solver and its validation | seconds |
+| `check_dmrg_convergence.py` | accuracy statement of Sec. 6 | 25 min |
+| `run_dmrg.py univ`, `fine` | Table 6 ($x=0.5$, $N\le128$) | 1.5 h |
+| `run_dmrg.py cont`, `cont2` | Table 7 ($x=1$–$16$, $N\le192$) | 3 h |
+| `run_dmrg.py theta0`, `analyze_theta0.py` | Table 2, DMRG string tension | 25 min |
+| `run_tower_dmrg.py` | DMRG towers | 1 h |
+| `analyze_dmrg.py` | Tables 6, 7, velocity, central charge | seconds |
 | `check_formulas.py` | characters (4.3), $\mathcal A_+$, identities (3.3) | seconds |
 | `make_figures.py` | all figures | seconds |
 | `paper/build.py` | this document | seconds |
 
 Raw results are stored as JSON in `data/`. The kernel is built with `gcc -O3 -march=native -fopenmp -shared -fPIC kernel.c -o kernel.so`.
 
+# Author's note {.unnumbered}
+
+The derivations, code, calculations and text of this paper were produced with an AI assistant (Claude Code) at the direction of the author. Every numerical statement can be regenerated from the scripts listed in Appendix B.
+
 # References {.unnumbered}
 
-Bibliographic details of Refs. [@adam] and [@act] were checked against the arXiv records during this work, and the equations quoted from them against the text. The remaining entries are standard and are cited from memory; volume and page numbers should be verified before formal submission.
+The bibliographic details of every entry were checked against publisher or arXiv records during this work. The equations quoted from Refs. [@adam] and [@act] were checked against the text of those papers, and the constant $\mathcal A_+$ of Ref. [@adam] was recomputed independently.
 
 ::: {#refs}
 :::
