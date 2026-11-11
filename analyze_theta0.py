@@ -109,4 +109,30 @@ for al in (0.25, 0.5):
         print(f"  continuum alpha={al} (linear in a^2; all spacings / without the coarsest): "
               f"a={res['a'][0]:.4f} / {res['a'][1]:.4f} (theory {S * (1 - np.cos(2 * np.pi * al)):.4f})   "
               f"b={res['b'][0]:+.3f} / {res['b'][1]:+.3f} (theory {b2(al):+.3f})   c3={res['c3'][0]:+.2f} / {res['c3'][1]:+.2f}")
+# third order: cubic fits sigma/(m g) = a + b m + c3 m^2 + c4 m^3, compared with third-order theory
+try:
+    t3 = json.load(open("data/third_order.json"))
+    c3th = lambda al: -t3["prefactor"] * (2 * t3["I3"] * (np.cos(6 * np.pi * al) - 1) + 6 * t3["I1"] * (np.cos(2 * np.pi * al) - 1))
+    print("\nthird order (cubic fits in m)")
+    third = {}
+    for al in (0.25, 0.5):
+        xs_ = sorted(float(k.split("|")[0]) for k in st if k.endswith(f"|{al}") and st[k]["c3"] is not None)
+        rows = []
+        for x in xs_:
+            d = st[f"{x}|{al}"]; mm = np.array(d["m"]); sig = np.array(d["sigma"])
+            p = np.polyfit(mm, sig / mm, 3)[::-1]
+            th2 = S * mm * (1 - np.cos(2 * np.pi * al)) + b2(al) * mm ** 2; th3 = th2 + c3th(al) * mm ** 3
+            rows.append({"x": x, "fit": p.tolist(), "ratio2": (sig / th2).tolist(), "ratio3": (sig / th3).tolist(),
+                         "c4_from_residual": ((sig - th3) / mm ** 4).tolist()})
+            print(f"  alpha={al} x={x:4.1f}: a={p[0]:.4f} b={p[1]:+.4f} c3={p[2]:+.3f} c4={p[3]:+.2f}   lattice/theory(3rd): "
+                  + " ".join(f"{v:.4f}" for v in sig / th3))
+        u = 1 / np.array(xs_)
+        ext = {n: [np.polyfit(u, [r["fit"][j] for r in rows], 1)[1], np.polyfit(u[1:], [r["fit"][j] for r in rows[1:]], 1)[1]]
+               for j, n in enumerate(("a", "b", "c3", "c4"))}
+        third[str(al)] = {"rows": rows, "continuum": ext, "c3_theory": c3th(al)}
+        print(f"  alpha={al}: continuum c3 = {ext['c3'][0]:+.3f} / {ext['c3'][1]:+.3f} (theory {c3th(al):+.4f});"
+              f"  c4 = {ext['c4'][0]:+.2f} / {ext['c4'][1]:+.2f}")
+    out["third_order"] = third
+except FileNotFoundError:
+    pass
 json.dump(out, open("data/theta0_summary.json", "w"), indent=1, default=float)

@@ -1,6 +1,6 @@
 # Summary
 
-The full write-up is the paper: [paper/paper.pdf](paper/paper.pdf) (26 pages; source `paper/paper.md`).
+The full write-up is the paper: [paper/paper.pdf](paper/paper.pdf) (29 pages; source `paper/paper.md`).
 This file is the one-page version.
 
 **Subject.** QED in 1+1 dimensions (Schwinger model): how a gauge theory with only massless
@@ -25,6 +25,7 @@ term (≤ 320 sites). No fitted physics parameters.
 | String tension at m = 0 | 0 | ≤ 3×10⁻⁵ g² |
 | String tension, charge ¼: linear, quadratic coefficient (continuum) | 0.1599, −0.358 | 0.1593 – 0.1598, −0.356 to −0.368 |
 | String tension, charge ½: linear, quadratic coefficient (continuum) | 0.3199, 0 | 0.3198 – 0.3199, 0.000 |
+| String tension, charge ½: cubic, quartic coefficient (continuum) | −0.3512, 0 | −0.348, 0.00(6) |
 | Level ratios, charge 0 (64 sites) | 3/2, 2, 2, 5/2 | 1.498, 1.993, 1.995, 2.487 |
 | Level ratios, charge −1 (64 sites) | 2, 3, 4, 4 | 1.996, 2.986, 3.969, 3.986 |
 | Ratio of first two gaps at the crossing | 3/2 | 1.500(2); 1.497 – 1.501 at six lattice spacings |
@@ -32,7 +33,7 @@ term (≤ 320 sites). No fitted physics parameters.
 | β/ν | 1/8 | 0.124(3) |
 | 1/ν | 1 | 1.00(1) |
 | Speed of light, continuum | 1 | 1.000(3) |
-| Critical mass, continuum (no prediction) | — | 0.33356(4); literature 0.333561(4) |
+| Critical mass, continuum (no prediction) | — | 0.33356(9); literature 0.333561(4) |
 
 **Findings beyond confirmation.**
 - Apparent convergence is not convergence. The gap ratio is flat to four digits for 16–24
@@ -42,13 +43,17 @@ term (≤ 320 sites). No fitted physics parameters.
 - On the staggered lattice the even–odd alternation of the entanglement entropy is
   proportional to the order parameter, so single-parity fits give central charges near 0.63
   and 0.37; the parity average gives 0.50.
-- Third-order string-tension coefficients were measured (−0.35(1) at charge ½); there is no
-  analytic prediction for them.
+- The third-order term of mass perturbation theory was computed here (two four-dimensional
+  integrals, 220.798 and −108.395). It predicts the cubic string-tension coefficient, which
+  the lattice confirms to 1%; with it, lattice and theory agree to one part in 10⁴ over the
+  whole mass range at charge ½. Even orders vanish at charge ½ by a selection rule, also
+  confirmed.
 - Classical, second-order perturbative and Gaussian estimates of the critical mass all fail
   (0.158; no transition; 0.265 with the wrong order of transition).
 
-**Uncertainties.** All are systematic (spread between extrapolation choices), not statistical.
-The critical-mass uncertainty is ten times that of the best published value.
+**Uncertainties.** Both methods are deterministic, so all uncertainties are systematic. The
+paper gives an itemised error budget for the critical mass (continuum extrapolation, finite
+size, criticality criterion, and five smaller sources; total 9×10⁻⁵).
 
 **Prior work.** The boundary-CFT identification and a far more precise critical mass were
 published by Arguello Cruz, Tarnopolsky and Xin (arXiv:2412.01902). This work rederives and

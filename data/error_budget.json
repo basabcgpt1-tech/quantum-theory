@@ -1,0 +1,30 @@
+{
+ "central": 0.3335630837053336,
+ "budget": {
+  "continuum fit form / range": 3.808259978699269e-05,
+  "finite size of individual points (propagated)": 2.7483049781460276e-05,
+  "finite size, coherent shift of all points": 5.3724140674948906e-05,
+  "criterion (crossing instead of R = 3/2)": 0.00011683584056021434,
+  "criterion (midpoint of the two criteria)": 5.7907546381130715e-05,
+  "interpolation in m (linear vs polynomial)": 3.007558488032913e-06,
+  "weighting (unweighted fit)": 3.692525234133548e-06,
+  "leave-one-spacing-out (max shift)": 1.1837666374081568e-05,
+  "DMRG truncation and convergence": 1.4999999999999998e-09
+ },
+ "total": 8.861524769348937e-05,
+ "conservative": 0.00013472190555105542,
+ "leave_one_out": [
+  0.3335512460389595,
+  0.33355357322215085,
+  0.3335582275885085,
+  0.3335675363212339
+ ],
+ "m32_linear": [
+  0.35726875635868527,
+  0.34217970268583153,
+  0.33681777999440965,
+  0.33495938274806186,
+  0.33420340254568454,
+  0.33386484103708614
+ ]
+}

@@ -25,6 +25,9 @@ REFS = {
  "dkpz": "R. Dempsey, I. R. Klebanov, S. S. Pufu and B. Zan, <i>Discrete chiral symmetry and mass shift in the lattice Hamiltonian approach to the Schwinger model</i>, Phys. Rev. Research <b>4</b>, 043133 (2022); arXiv:2206.05308.",
 }
 src = (here / "paper.md").read_text()
+import os
+if os.environ.get("PAPER_AUTHOR"):          # set the author line without editing the source
+    src = re.sub(r'^author: ".*"$', f'author: "{os.environ["PAPER_AUTHOR"]}"', src, count=1, flags=re.M)
 order = []
 def cite(m):
     nums = []
