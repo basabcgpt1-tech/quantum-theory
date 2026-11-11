@@ -138,10 +138,12 @@ if 0.5 in xs:
           f" max residual {res:.1e} (range of dS {np.ptp(dS):.3f})")
 
 # ------------------------------------------------------------------ continuum limit of m_c
-# At each lattice spacing: m_{3/2}(N) on every size, then N -> infinity from the two largest sizes
-# assuming a correction N^-p, p = 2 and 3 (their spread is the finite-size uncertainty).
+# At each lattice spacing: m_{3/2}(N) on every size. The sequences converge faster than any low
+# power of 1/N once Lg > 60 (x = 4 and 8 are flat to 1e-5 over the last two sizes), so the
+# N -> infinity value is taken as the largest-size value, with the last change as its uncertainty.
+# Power-law extrapolations (p = 2, 3) from the two largest sizes are listed for comparison.
 print("\ncritical mass versus lattice spacing (criterion R = 3/2)")
-print("    x     ga    sizes (Lg of the two largest)         m_3/2(N)                      N->inf p=2   p=3     crossing(R*)")
+print("    x     ga    N (two largest; Lg)      m_3/2(N), three largest          m_c(x)  +-        [p=2     p=3]     crossing (R*)")
 cont = []
 for x in xs:
     T = table(x); Ns = sorted(T)
@@ -152,33 +154,36 @@ for x in xs:
     (N1, a), (N2, b) = vals[-2], vals[-1]
     ex = [(N2 ** p * b - N1 ** p * a) / (N2 ** p - N1 ** p) for p in (2, 3)]
     mc = cross(T, Ns[-2], Ns[-1]); Rx = None if mc is None else R(T, Ns[-1], mc)
-    cont.append({"x": x, "sizes": [N for N, _ in vals], "m32": [v for _, v in vals], "p2": ex[0], "p3": ex[1],
-                 "cross": mc, "R_cross": Rx, "Lg": [N1 / np.sqrt(x), N2 / np.sqrt(x)]})
+    err = max(abs(b - a), 1e-5)
+    cont.append({"x": x, "sizes": [N for N, _ in vals], "m32": [v for _, v in vals], "mc": b, "err": err,
+                 "p2": ex[0], "p3": ex[1], "cross": mc, "R_cross": Rx, "Lg": [N1 / np.sqrt(x), N2 / np.sqrt(x)]})
     print(f"  {x:5.2f}  {1 / np.sqrt(x):.3f}  {N1}-{N2} ({N1 / np.sqrt(x):.0f}, {N2 / np.sqrt(x):.0f})   "
-          + " ".join(f"{v:.5f}" for _, v in vals[-3:]) + f"   {ex[0]:.5f}  {ex[1]:.5f}   "
+          + " ".join(f"{v:.5f}" for _, v in vals[-3:]) + f"   {b:.5f} {err:.5f}   [{ex[0]:.5f} {ex[1]:.5f}]   "
           + ("" if mc is None else f"{mc:.5f} ({Rx:.4f})"))
 summary["cont"] = cont
-u = np.array([1 / c["x"] for c in cont]); mid = np.array([0.5 * (c["p2"] + c["p3"]) for c in cont])
-err = np.array([max(0.5 * abs(c["p2"] - c["p3"]), 2e-5) for c in cont])
+u = np.array([1 / c["x"] for c in cont]); y = np.array([c["mc"] for c in cont]); err = np.array([c["err"] for c in cont])
 fits = {}
 for lab, sel, deg in (("x >= 1, quadratic in a^2", u <= 1.0, 2), ("x >= 2, quadratic in a^2", u <= 0.5, 2),
-                      ("x >= 2, linear in a^2", u <= 0.5, 1), ("x >= 4, linear in a^2", u <= 0.25, 1)):
+                      ("x >= 4, quadratic in a^2 (exact)", u <= 0.25, 2), ("x >= 4, linear in a^2", u <= 0.25, 1),
+                      ("x >= 8, linear in a^2 (exact)", u <= 0.125, 1)):
     if sel.sum() > deg:
-        vals_ = [np.polyfit(u[sel], y[sel], deg, w=1 / err[sel])[-1] for y in
-                 (mid, np.array([c["p2"] for c in cont]), np.array([c["p3"] for c in cont]))]
-        fits[lab] = vals_
-        print(f"  continuum, {lab}: m_c/g = {vals_[0]:.5f}   (p=2: {vals_[1]:.5f}, p=3: {vals_[2]:.5f})")
+        A_ = np.vander(u[sel], deg + 1) / err[sel, None]
+        cov = np.linalg.inv(A_.T @ A_); p_ = cov @ A_.T @ (y[sel] / err[sel])
+        chi2 = float(((A_ @ p_ - y[sel] / err[sel]) ** 2).sum())
+        fits[lab] = [float(p_[-1]), float(np.sqrt(cov[-1, -1])), chi2, int(sel.sum() - deg - 1), float(p_[-2])]
+        print(f"  continuum, {lab}: m_c/g = {p_[-1]:.5f} +- {np.sqrt(cov[-1, -1]):.5f}   (chi2 = {chi2:.1f}, dof = {sel.sum() - deg - 1};"
+              f" a^2 coefficient {p_[-2]:.5f})")
 summary["cont_fits"] = fits
 # velocity of light at the critical mass of each lattice spacing (two largest sizes)
 print("\nvelocity at criticality versus lattice spacing")
 vel = []
 for c in cont:
-    x = c["x"]; T = table(x); Ns = sorted(T); m = 0.5 * (c["p2"] + c["p3"]); N1, N2 = Ns[-2], Ns[-1]
+    x = c["x"]; T = table(x); Ns = sorted(T); m = c["mc"]; N1, N2 = Ns[-2], Ns[-1]
     v = 1 / (2 * np.pi * (1 / ev(T, N2, "gap", m) - 1 / ev(T, N1, "gap", m)) / ((N2 - N1) / np.sqrt(x)))
     vel.append([x, v]); print(f"  x={x:5.2f}  ga={1 / np.sqrt(x):.3f}  v={v:.4f}")
-vv = np.array(vel); sel = (vv[:, 0] >= 2) & (vv[:, 0] <= 8)
+vv = np.array(vel); sel = vv[:, 0] >= 2
 v_a = np.polyfit(vv[sel, 0] ** -0.5, vv[sel, 1], 1)[1]; v_a2 = np.polyfit(1 / vv[sel, 0], vv[sel, 1], 1)[1]
 summary["velocity"] = {"rows": vel, "linear_in_a": v_a, "linear_in_a2": v_a2}
-print(f"  a -> 0 from x = 2, 4, 8: v = {v_a:.4f} (linear in a), {v_a2:.4f} (linear in a^2)")
+print(f"  a -> 0 from x >= 2: v = {v_a:.4f} (linear in a), {v_a2:.4f} (linear in a^2)")
 print("  reference: 0.333561(4)  [Arguello Cruz, Tarnopolsky, Xin]")
 json.dump(summary, open("data/dmrg_summary.json", "w"), indent=1, default=float)
