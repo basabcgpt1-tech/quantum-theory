@@ -59,7 +59,43 @@ def job0(args):
     return f
 
 
+# more masses for the slope of the gap; larger volumes and more masses for the string tension
+SETS["theta0b"] = ([(x, N, m, 0.0, 2) for x in (9.0, 16.0, 25.0) for N in (40, 56, 72) for m in (0.005, 0.01, 0.03)]
+                   + [(x, N, m, al, 1) for x, Ns in ((4.0, (64, 96)), (9.0, (96, 128)), (16.0, (96, 128)), (25.0, (96, 128)))
+                      for N in Ns for m in (0.0, 0.0125, 0.025, 0.0375, 0.05, 0.075, 0.1) for al in (0.0, 0.25, 0.5)])
+# larger volumes for the slope of the gap
+SETS["theta0c"] = [(x, N, m, 0.0, 2) for x in (9.0, 16.0) for N in (96, 128) for m in (0.0, 0.005, 0.01, 0.02, 0.03, 0.04)]
+# long chains at the finest spacings, masses run in sequence with warm starts: (x, N, masses)
+CHAINS = [(8.0, 256, (0.3335, 0.3342, 0.3349)), (16.0, 256, (0.3331, 0.3338, 0.3345)),
+          (8.0, 320, (0.3335, 0.3342, 0.3349)), (16.0, 320, (0.3331, 0.3338, 0.3345))]
+
+
+def chain(args):
+    import dmrg
+    x, N, masses = args; init = None
+    for m in masses:
+        f = f"data/dmrg/{x}_{N}_{m}.json"
+        if os.path.exists(f) and init is None:
+            continue
+        t = time.time()
+        E, st = dmrg.spectrum(N, x, m, 0.5, k=3, full=True, init_states=init)
+        init = st
+        json.dump({"x": x, "N": N, "m": m, "E": E.tolist(), "chi": [s.chi for s in st], "sweeps": [s.sweeps for s in st],
+                   "entropy": dmrg.entropies(st[0]), "field": dmrg.field(st[0], 0.5), "seconds": time.time() - t},
+                  open(f, "w"))
+        print(f"{f}  R={(E[2] - E[0]) / (E[1] - E[0]):.5f}  [{time.time() - t:.0f}s]", flush=True)
+
+
 if __name__ == "__main__":
+    if sys.argv[1] == "chains":
+        with Pool(4) as p:
+            list(p.imap_unordered(chain, CHAINS, chunksize=1))
+        print("done"); sys.exit()
+    if sys.argv[1] in ("theta0", "theta0b", "theta0c"):
+        os.makedirs("data/dmrg0", exist_ok=True)
+        with Pool(4) as p:
+            list(p.imap_unordered(job0, sorted(SETS[sys.argv[1]], key=lambda j: j[1] * j[4]), chunksize=1))
+        print("done"); sys.exit()
     if sys.argv[1] == "theta0":
         os.makedirs("data/dmrg0", exist_ok=True)
         with Pool(4) as p:

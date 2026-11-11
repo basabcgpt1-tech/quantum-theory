@@ -54,13 +54,14 @@ class State:
         self.S = [None] * (N - 1)
 
 
-def solve(Ws, prev=(), chi=120, cut=1e-13, sweeps=30, tol=1e-10, weight=20.0, seed=0, init=None, verbose=False):
+def solve(Ws, prev=(), chi=120, cut=1e-13, sweeps=30, tol=1e-10, weight=20.0, seed=0, init=None, noise=0.05,
+          verbose=False):
     """Lowest state of the MPO orthogonal to the states in `prev`. Returns (energy, State)."""
     N = len(Ws); rng = np.random.default_rng(seed)
     psi = State(N, rng)
     if init is not None:                                   # start from a copy of another state
         psi.A = [a.copy() for a in init.A]
-        psi.A[N // 2] = psi.A[N // 2] + 0.05 * rng.standard_normal(psi.A[N // 2].shape)
+        psi.A[N // 2] = psi.A[N // 2] + noise * rng.standard_normal(psi.A[N // 2].shape)
     A = psi.A
     for k in range(N - 1, 0, -1):                          # right-canonicalise
         D0, d, D1 = A[k].shape
@@ -78,6 +79,7 @@ def solve(Ws, prev=(), chi=120, cut=1e-13, sweeps=30, tol=1e-10, weight=20.0, se
             OR[p][k - 1] = np.tensordot(A[k], np.tensordot(ph.A[k], OR[p][k], axes=(2, 1)), axes=([1, 2], [1, 2]))
     E = None; hist = []
     for sw in range(sweeps):
+        chi_sw = chi if init is not None else min(chi, 16 * 2 ** sw)     # cheap first sweeps from a product state
         for direction in (+1, -1):
             rng_i = range(0, N - 1) if direction > 0 else range(N - 2, -1, -1)
             for i in rng_i:
@@ -101,7 +103,7 @@ def solve(Ws, prev=(), chi=120, cut=1e-13, sweeps=30, tol=1e-10, weight=20.0, se
                 E, v = _lanczos(mv, th.ravel())
                 M = v.reshape(shp[0] * 2, 2 * shp[3])
                 U, S, Vt = np.linalg.svd(M, full_matrices=False)
-                w2 = S ** 2; keep = max(1, min(chi, int(np.sum(np.cumsum(w2[::-1])[::-1] > cut * w2.sum()))))
+                w2 = S ** 2; keep = max(1, min(chi_sw, int(np.sum(np.cumsum(w2[::-1])[::-1] > cut * w2.sum()))))
                 U, S, Vt = U[:, :keep], S[:keep], Vt[:keep]; S = S / np.linalg.norm(S)
                 psi.S[i] = S
                 if direction > 0:
@@ -117,7 +119,7 @@ def solve(Ws, prev=(), chi=120, cut=1e-13, sweeps=30, tol=1e-10, weight=20.0, se
         hist.append(E)
         if verbose:
             print(f"  sweep {sw}: E = {E:.10f}  chi = {max(a.shape[2] for a in A)}", flush=True)
-        if sw >= 3 and abs(hist[-1] - hist[-2]) < tol and abs(hist[-2] - hist[-3]) < tol:
+        if sw >= 3 and chi_sw == chi and abs(hist[-1] - hist[-2]) < tol and abs(hist[-2] - hist[-3]) < tol:
             break
     psi.sweeps = sw + 1; psi.chi = max(a.shape[2] for a in A)
     return E, psi
@@ -167,12 +169,16 @@ def field(psi, eps0):
     return res
 
 
-def spectrum(N, x, m, eps0=0.0, k=3, Q0=0, chi=120, lam=4.0, shift=True, verbose=False, full=False, **kw):
+def spectrum(N, x, m, eps0=0.0, k=3, Q0=0, chi=120, lam=4.0, shift=True, verbose=False, full=False,
+             init_states=None, **kw):
     """k lowest energies in charge sector Q0, in units of g (same convention as qed2.spectrum)."""
     Ws = mpo(N, x, m, eps0, shift, lam, Q0)
     Es, states = [], []
     for j in range(k):
-        E, psi = solve(Ws, prev=states, chi=chi, seed=j, init=states[-1] if states else None, verbose=verbose, **kw)
+        if init_states is not None:        # warm start from the states of a neighbouring parameter point
+            E, psi = solve(Ws, prev=states, chi=chi, seed=j, init=init_states[j], noise=1e-3, verbose=verbose, **kw)
+        else:
+            E, psi = solve(Ws, prev=states, chi=chi, seed=j, init=states[-1] if states else None, verbose=verbose, **kw)
         Es.append(E); states.append(psi)
     order = np.argsort(Es)
     E = np.array(Es)[order] / (2 * np.sqrt(x))
