@@ -13,7 +13,7 @@ def table(x):
     Ns = sorted({k[1] for k in D if k[0] == x}); out = {}
     for N in Ns:
         ms = np.array(sorted(k[2] for k in D if k[0] == x and k[1] == N))
-        if len(ms) < 3:
+        if len(ms) < 2:
             continue
         E = np.array([D[(x, N, m)]["E"] for m in ms])
         mid = np.array([0.5 * (D[(x, N, m)]["field"][N // 2 - 1] + D[(x, N, m)]["field"][N // 2]) for m in ms])

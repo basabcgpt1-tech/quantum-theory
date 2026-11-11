@@ -66,8 +66,8 @@ SETS["theta0b"] = ([(x, N, m, 0.0, 2) for x in (9.0, 16.0, 25.0) for N in (40, 5
 # larger volumes for the slope of the gap
 SETS["theta0c"] = [(x, N, m, 0.0, 2) for x in (9.0, 16.0) for N in (96, 128) for m in (0.0, 0.005, 0.01, 0.02, 0.03, 0.04)]
 # long chains at the finest spacings, masses run in sequence with warm starts: (x, N, masses)
-CHAINS = [(8.0, 256, (0.3335, 0.3342, 0.3349)), (16.0, 256, (0.3331, 0.3338, 0.3345)),
-          (8.0, 320, (0.3335, 0.3342, 0.3349)), (16.0, 320, (0.3331, 0.3338, 0.3345))]
+CHAINS = [(8.0, 256, (0.3349,)), (16.0, 256, (0.3339,)), (16.0, 320, (0.3336, 0.3340)),
+          (8.0, 256, (0.3335, 0.3342)), (16.0, 256, (0.3331,))]
 
 
 def chain(args):
